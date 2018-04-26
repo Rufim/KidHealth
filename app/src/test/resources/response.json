@@ -1,0 +1,34 @@
+{
+  "actions": null,
+  "actionMap": {
+    "THURSDAY": [
+      {
+        "id": 10,
+        "title": "Title 5",
+        "description": "Description 5",
+        "type": "SCHOOL",
+        "active": true,
+        "dayOfWeek": "THURSDAY",
+        "startTime": "10:00:00",
+        "finishTime": "11:00:00",
+        "duration": null,
+        "comment": "Comment 5"
+      },
+      {
+        "id": 11,
+        "title": "Title 6",
+        "description": "Description 6",
+        "type": "TRAINING",
+        "active": true,
+        "dayOfWeek": "THURSDAY",
+        "startTime": "11:00:00",
+        "finishTime": "12:30:00",
+        "duration": null,
+        "comment": "Comment 6"
+      }
+    ]
+  },
+  "startDate": "2018-04-12",
+  "finishDate": "2018-04-12",
+  "period": 1
+}

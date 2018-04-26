@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_dark"
+    android:orientation="vertical">
+
+    <include layout="@layout/top_progressbar" />
+
+    <View
+        android:id="@+id/day_action_active"
+        android:background="@drawable/day_active_toggle"
+        android:enabled="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="14dp"
+        android:layout_marginRight="24dp"
+        android:layout_width="12dp"
+        android:layout_height="12dp"/>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="26dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/day_action_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8:00 - 13:00"
+                android:textAllCaps="true"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:maxWidth="260dp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_super_huge"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/day_action_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Пробежка утром"
+                android:textColor="@color/accent"
+                android:maxWidth="260dp"
+                android:textSize="@dimen/text_super_large"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/day_action_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:text="Медленный бег, не забыть воды"
+                android:textColor="@color/md_blue_grey_300"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="60dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/day_action_time_passed"
+                    android:textAllCaps="true"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_medium"/>
+                <TextView
+                    android:id="@+id/day_action_time_passed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textAllCaps="true"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textSize="60sp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/day_action_start"
+                    android:background="@drawable/rounded_green_button"
+                    android:layout_margin="@dimen/spacing_medium"
+                    android:text="@string/day_action_start"
+                    android:textAllCaps="false"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp" />
+                <Button
+                    android:id="@+id/day_action_cancel"
+                    android:background="@drawable/rounded_red_button"
+                    android:layout_margin="@dimen/spacing_medium"
+                    android:text="@string/day_action_stop"
+                    android:textAllCaps="false"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp" />
+                <Button
+                    android:id="@+id/day_action_pass"
+                    android:background="@drawable/rounded_black_button"
+                    android:layout_margin="@dimen/spacing_medium"
+                    android:text="@string/day_action_pass"
+                    android:textAllCaps="false"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

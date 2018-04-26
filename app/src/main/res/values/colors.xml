@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#3b6897</color>
+    <color name="primary_dark">#275482</color>
+    <color name="accent">#4d90d2</color>
+
+    <color name="control_active">#FF3771AA</color>
+
+    <color name="dotted_border">#FF1D4370</color>
+</resources>

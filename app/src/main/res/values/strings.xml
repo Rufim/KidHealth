@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">KidHealth</string>
+
+    <string name="users">Пользователи</string>
+
+    <string name="login">ЛОГИН</string>
+    <string name="login_password">ПАРОЛЬ</string>
+    <string name="login_enter">Войти</string>
+    <string name="login_register">Зарегистрироваться</string>
+    <string name="city">Город</string>
+    <string name="address">Адрес</string>
+    <string name="name">ФИО</string>
+    <string name="gender">Пол</string>
+    <string name="male">М</string>
+    <string name="female">Ж</string>
+    <string name="birthdate_pattern">%1$02d-%2$02d-%3$04d</string>
+    <string name="birthdate">Дата Рождения</string>
+    <string name="save">Сохранить</string>
+    <string name="profile_save_success">Профиль обновлен!</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Нормер телефона</string>
+    <string name="share">Поделится</string>
+    <string name="search">Поиск...</string>
+    <string name="refresh">Обновить</string>
+    <string name="ready">Готово</string>
+    <string name="profile_save">Сохранить</string>
+    <string name="user">Пользователь</string>>
+    <string name="profile_city">Город</string>
+    <string name="profile_female">Ж</string>
+    <string name="profile_gender">Пол</string>
+    <string name="profile_male">М</string>
+    <string name="profile_name">Имя</string>
+    <string name="profile_orders">Moи заказы</string>
+    <string name="profile_payment_cards">Мои платежные карты</string>
+    <string name="profile_phone">Телефон</string>
+    <string name="profile_birthdate_pattern">%1$02d-%2$02d-%3$04d</string>
+    <string name="profile_birthdate">Дата Рождения</string>
+    <string name="points_cups">%1$d очков, %2$d чашек</string>
+    <string name="login_password_error">Нужен пароль</string>
+    <string name="login_error">Нужен логин</string>
+    <string name="login_wrong">Неверный логин или пароль!</string>
+    <string name="filter_hint">Фильтр..</string>
+    <string name="error_network">Проврьте соединение с\nинтернетом...</string>
+    <string name="edit_user_points">Текущие очки %d</string>
+    <string name="edit_user_points_and_cups">Текущие очки %1$d и %2$d чашки коффе</string>
+    <string name="profile">Редактирование</string>
+    <string name="error">Произошла ошибка!</string>
+    <string name="edit">Редактировать</string>
+    <string name="free_coffee_got_it">Понял</string>
+    <string name="edit_user_add_points">Добавить очки</string>
+
+
+    <!-- ERRORS -->
+    <string name="error_required_field">Обязательно для заполнения</string>
+    <string name="error_email_not_valid">Введите корректный email адрес</string>
+
+    <!-- DIALOGS -->
+    <string name="dialog_loading_please_wait">Загрузка. Пожалуйста подождите...</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_yes">Да</string>
+    <string name="dialog_no">Нет</string>
+    <string name="login_enter_through">Или войти через соцсети</string>
+    <string name="login_authorization">Авторизация</string>
+
+    <string formatted="false" name="login_email">
+        <b>EMAIL</b>
+    </string>
+    <string name="day_action_time_passed">Время с начала:</string>
+    <string name="day_action_start">Начать</string>
+    <string name="day_action_stop">Отменить</string>
+    <string name="day_action_pass">Отложить на \n10 минут</string>
+
+
+</resources>

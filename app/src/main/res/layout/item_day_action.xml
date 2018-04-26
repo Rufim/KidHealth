@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingTop="@dimen/spacing_large"
+    android:paddingBottom="@dimen/spacing_large"
+    android:paddingRight="@dimen/spacing_huge"
+    android:paddingLeft="@dimen/spacing_huge"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/schedule_day_action_time"
+        android:layout_width="wrap_content"
+        android:textColor="@color/black"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/text_super_small"
+        android:text="7:00 - 7:45"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/schedule_day_action_title"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/schedule_day_action_time"
+        android:textColor="@color/black"
+        android:text="Пробежка утром"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/schedule_day_action_comment"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/schedule_day_action_title"
+        android:text="Медленный бег, не забыть воды"
+        android:gravity="center"
+        android:textColor="@color/gray"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/schedule_day_action_run"
+        android:scaleType="centerInside"
+        android:src="@drawable/running_rabbit_96"
+        android:background="@drawable/clickable"
+        android:padding="3dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="8dp"/>
+</RelativeLayout>
