@@ -45,6 +45,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     private DayAction dayAction;
     private DateTime startTime;
     private DateTime endTime;
+    private boolean stopped = false;
     private PreferenceMaster preferenceMaster;
     private PeriodFormatter timeFormatter = new PeriodFormatterBuilder()
             .printZeroAlways()
@@ -81,7 +82,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         } else {
             if(!this.dayAction.equals(dayAction)) {
                 initTime(dayAction);
-            } else {
+            } else if(!stopped){
                 getViewState().updateTime(timeFormatter.print(new Duration(startTime, DateTime.now()).toPeriod()));
                 continueAction();
             }
@@ -90,6 +91,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     }
 
     private void initTime(DayAction dayAction) {
+        stopped = false;
         this.dayAction = dayAction;
         dayAction.invalidateTime();
         startTime = dayAction.getStart();
@@ -141,6 +143,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     public void startAction() {
         if (dayAction != null && dayAction.getActive() && timer == null) {
             startTime = DateTime.now();
+            stopped = false;
             continueAction();
         }
     }
@@ -158,12 +161,15 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     }
 
     private void onFinish() {
+
         if(startTime.isBefore(endTime)) getViewState().updateTime(timeFormatter.print(new Duration(startTime, endTime).toPeriod()));
         getViewState().onFinished();
         stopTimer();
     }
 
     private void stopTimer() {
+        preferenceMaster.putValue(LAST_TIME_ID, "").applay();
+        stopped = true;
         if (timer != null) {
             timer.cancel();
             timer = null;

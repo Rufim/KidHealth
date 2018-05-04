@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import org.joda.time.DateTime;
+
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
@@ -49,6 +51,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<WeekDay, DayActionsF
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        currentItem = DateTime.now().getDayOfWeek() - 1;
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tabStripMode = false;
         View root = super.onCreateView(inflater, container, savedInstanceState);
@@ -81,11 +89,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<WeekDay, DayActionsF
     }
 
     @Override
-    public void finishLoad(AsyncTask onElementsLoadedTask, Object[] loadedTaskParams) {
-        super.finishLoad(onElementsLoadedTask, loadedTaskParams);
+    public void finishLoad(List<WeekDay> items, AsyncTask onElementsLoadedTask, Object[] loadedTaskParams) {
+        super.finishLoad(items, onElementsLoadedTask, loadedTaskParams);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             replaceTabAt(i);
         }
+        pager.setCurrentItem(currentItem);
     }
 
     private void replaceTabAt(int position) {

@@ -1,17 +1,21 @@
 package ru.constant.kidhealth.net;
 
 
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.Map;
+
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
+import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
-import ru.constant.kidhealth.domain.models.Actions;
-import ru.constant.kidhealth.domain.models.User;
+import ru.constant.kidhealth.domain.models.Credentials;
+import ru.constant.kidhealth.domain.models.DayAction;
+import ru.constant.kidhealth.domain.models.Token;
 
 
 /**
@@ -22,20 +26,21 @@ import ru.constant.kidhealth.domain.models.User;
  */
 public interface RestApi {
 
-    @FormUrlEncoded
 	@POST("/login")
-    Observable<ResponseBody> signIn(@Field("username") String login, @Field("password") String password);
+    Observable<Token> signIn(@Body Credentials credentials);
+
+    @GET("/token")
+    Observable<Token> refreshToken();
+
+    @GET("schedule/today")
+    Observable<List<DayAction>> today();
 
 
-    @GET("schedule/{userId}/today")
-    Observable<Actions> today(@Header("Authorization") String token, @Path("userId") String userId);
+    @GET("schedule/week")
+    Observable<Map<DayOfWeek, List<DayAction>>> week();
 
 
-    @GET("schedule/{userId}/week")
-    Observable<Actions> week(@Header("Authorization") String token, @Path("userId") String userId);
-
-
-    @GET("schedule/{userId}/{weekDay}")
-    Observable<Actions> today(@Header("Authorization") String token, @Path("userId") String userId, @Path("weekDay") String weekDay);
+    @GET("schedule/{weekDay}")
+    Observable<List<DayAction>> today(@Path("weekDay") String weekDay);
 
 }

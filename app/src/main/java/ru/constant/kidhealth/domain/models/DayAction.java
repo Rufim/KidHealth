@@ -10,8 +10,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +30,7 @@ public class DayAction implements Parcelable, Serializable {
     WeekDay dayOfWeek;
     String startTime;
     String finishTime;
+    String actionDate;
     String duration;
     String comment;
 

@@ -2,14 +2,11 @@ package ru.constant.kidhealth.dagger;
 
 import android.content.Context;
 
-import org.robolectric.RuntimeEnvironment;
-
 import ru.constant.kidhealth.activity.MainActivity;
-import ru.constant.kidhealth.fragment.LoginFragment;
+import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.constant.kidhealth.mvp.presenters.DayActionsPresenter;
-import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
-import ru.constant.kidhealth.net.RestApi;
+import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
 import ru.constant.kidhealth.net.RestService;
 
 public class TestComponent implements AppComponent {
@@ -47,7 +44,7 @@ public class TestComponent implements AppComponent {
     public void inject(MainActivity activity) { }
 
     @Override
-    public void inject(LoginFragment fragment) { }
+    public void inject(SignInFragment fragment) { }
 
     @Override
     public void inject(SchedulePresenter schedulePresenter) { }

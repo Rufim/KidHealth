@@ -13,13 +13,14 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.constant.kidhealth.BuildConfig;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
 import ru.constant.kidhealth.mvp.views.SignInView;
 import ru.kazantsev.template.fragments.BaseFragment;
 
-public class LoginFragment extends BaseFragment implements SignInView {
+public class SignInFragment extends BaseFragment implements SignInView {
 
     @InjectPresenter
     SignInPresenter signInPresenter;
@@ -27,7 +28,7 @@ public class LoginFragment extends BaseFragment implements SignInView {
     @BindView(R.id.load_more)
     ProgressBar progressBar;
     @BindView(R.id.editTextLogin)
-    EditText editTextEmail;
+    EditText editTextLogin;
     @BindView(R.id.editTextPassword)
     EditText editTextPassword;
     @BindView(R.id.textViewBtnLogin)
@@ -52,9 +53,13 @@ public class LoginFragment extends BaseFragment implements SignInView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_sign_in, container, false);
         bind(rootView);
         ((MainActivity)getActivity()).hideKeyboard();
+        if(BuildConfig.DEBUG) {
+            editTextLogin.setText(BuildConfig.USERNAME);
+            editTextPassword.setText(BuildConfig.PASSWORD);
+        }
         return rootView;
     }
 
@@ -62,7 +67,7 @@ public class LoginFragment extends BaseFragment implements SignInView {
     @OnClick(R.id.textViewBtnLogin)
     public void onClickLogin() {
         ((MainActivity)getActivity()).hideKeyboard();
-        signInPresenter.signIn(editTextEmail.getText().toString(), editTextPassword.getText().toString());
+        signInPresenter.signIn(editTextLogin.getText().toString(), editTextPassword.getText().toString());
     }
 
     @OnClick(R.id.textViewBtnRegister)
@@ -77,8 +82,8 @@ public class LoginFragment extends BaseFragment implements SignInView {
 
     }
 
-    public static LoginFragment show (BaseFragment fragment) {
-        return show(fragment, LoginFragment.class);
+    public static SignInFragment show (BaseFragment fragment) {
+        return show(fragment, SignInFragment.class);
     }
 
     @Override
@@ -103,13 +108,13 @@ public class LoginFragment extends BaseFragment implements SignInView {
 
     @Override
     public void hideFormError() {
-        editTextEmail.setError(null);
+        editTextLogin.setError(null);
         editTextPassword.setError(null);
     }
 
     @Override
     public void invalidLogin(Integer loginError) {
-        editTextEmail.setError(getString(loginError));
+        editTextLogin.setError(getString(loginError));
     }
 
     @Override

@@ -6,21 +6,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import net.vrallev.android.cat.Cat;
 
 import org.greenrobot.eventbus.Subscribe;
 
 
-import okhttp3.Response;
 import ru.constant.kidhealth.R;
-import ru.constant.kidhealth.fragment.LoginFragment;
+import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.kazantsev.template.activity.BaseActivity;
 import ru.kazantsev.template.domain.event.FragmentAttachedEvent;
-import ru.kazantsev.template.domain.event.NetworkEvent;
 import ru.kazantsev.template.util.GuiUtils;
 
 
@@ -39,7 +34,7 @@ public class MainActivity extends BaseActivity {
         if (sectionFragment != null) {
             restoreFragment(sectionFragment);
         } else {
-            replaceFragment(LoginFragment.class);
+            replaceFragment(SignInFragment.class);
         }
     }
 

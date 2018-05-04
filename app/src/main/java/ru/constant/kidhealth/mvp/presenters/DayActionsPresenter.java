@@ -3,7 +3,6 @@ package ru.constant.kidhealth.mvp.presenters;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,13 +35,7 @@ public class DayActionsPresenter extends DataSourcePresenter<DataSourceView<DayA
                 if(skip > 0)  {
                     return Observable.just(new ArrayList<DayAction>()).flatMapIterable(e -> e);
                 } else {
-                    return restService.getWeekDay("", "1", weekDay.name()).flatMapIterable(dayActions -> {
-                        if (dayActions.getDayActions() != null) {
-                            return dayActions.getDayActions();
-                        } else {
-                            return new ArrayList<>(0);
-                        }
-                    });
+                    return restService.getWeekDay(weekDay.name());
                 }
             }
         });

@@ -21,12 +21,29 @@ android {
     buildToolsVersion buildToolsProjectVersion
 
     defaultConfig {
+        def addConstant = {constantName, constantValue ->
+            manifestPlaceholders += [ (constantName):constantValue]
+            buildConfigField "String", "${constantName}", "\"${constantValue}\""
+        }
+
         applicationId "ru.constant.kidhealth"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        addConstant("TOKEN_SIGNING_KEY", "xm8EV6Hy5RMFK4EEACIDAwQus")
+    }
+
+    buildTypes {
+        release {
+            buildConfigField "String", "USERNAME", "\"\""
+            buildConfigField "String", "PASSWORD", "\"\""
+        }
+        debug {
+            buildConfigField "String", "USERNAME", "\"123\""
+            buildConfigField "String", "PASSWORD", "\"admin@123\""
+        }
     }
 
     compileOptions {
@@ -54,6 +71,8 @@ android {
             keyPassword "123qweasd"
         }
     }
+
+
 
     buildTypes {
         release {
@@ -97,6 +116,7 @@ dependencies {
     implementation ("com.evernote:android-job:1.2.1") {
         exclude group: 'com.android.support'
     }
+    implementation 'com.auth0.android:jwtdecode:1.1.1'
     implementation "org.greenrobot:eventbus:3.0.0"
     implementation "net.vrallev.android:cat:1.0.5"
     implementation 'net.danlew:android.joda:2.9.9.3'

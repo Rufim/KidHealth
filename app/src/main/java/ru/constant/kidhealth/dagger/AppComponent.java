@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.constant.kidhealth.activity.MainActivity;
-import ru.constant.kidhealth.fragment.LoginFragment;
+import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.constant.kidhealth.mvp.presenters.DayActionPresenter;
 import ru.constant.kidhealth.mvp.presenters.DayActionsPresenter;
 import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
@@ -30,7 +30,7 @@ public interface AppComponent {
 
     void inject(MainActivity activity);
 
-    void inject(LoginFragment fragment);
+    void inject(SignInFragment fragment);
 
     void inject(SchedulePresenter schedulePresenter);
 

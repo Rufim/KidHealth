@@ -1,6 +1,7 @@
 package ru.constant.kidhealth.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 
@@ -45,9 +46,10 @@ public class SignInPresenter extends BasePresenter<SignInView> {
         getViewState().startSignIn();
 
         Disposable disposable = restService.signIn(login, password)
-                .doOnNext(user -> AppUtils.saveUser(login, password, "1"))
                 .compose(RxUtils.applySchedulers())
-                .subscribe(user -> {
+                .subscribe(token -> {
+                    AppUtils.saveToken(token);
+                    AppUtils.saveUser(login, password);
                     getViewState().finishSignIn();
                     getViewState().successSignIn();
                 }, exception -> {

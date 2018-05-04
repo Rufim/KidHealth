@@ -21,7 +21,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.constant.kidhealth.net.AddTokenInterceptor;
 import ru.constant.kidhealth.net.RestService;
+import ru.constant.kidhealth.net.RefreshTokenAuthenticator;
 import ru.kazantsev.template.net.interceptors.AddCookiesInterceptor;
 import ru.kazantsev.template.net.interceptors.ReceivedCookiesInterceptor;
 
@@ -48,14 +50,17 @@ public class RetrofitModule {
 
 		return new OkHttpClient.Builder()
 				.connectTimeout(60, TimeUnit.SECONDS)
+				.readTimeout(60, TimeUnit.SECONDS)
 				.addNetworkInterceptor(interceptor)
-				//.authenticator(new TokenAuthenticator(context))
+				.authenticator(new RefreshTokenAuthenticator(context))
+				.addInterceptor(new AddTokenInterceptor(context))
 				.addInterceptor(new AddCookiesInterceptor(context))
 				.addInterceptor(new ReceivedCookiesInterceptor(context))
 				.addInterceptor(chain -> {
 					Request original = chain.request();
 					Request request = original.newBuilder()
-							.header("Content-Type", "application/json")
+							.header("X-Requested-With", "XMLHttpRequest")
+							.header("Content-Type", "application/json; charset=utf-8")
 							.header("Accept", "application/json")
 							.method(original.method(), original.body())
 							.build();

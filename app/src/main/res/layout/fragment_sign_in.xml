@@ -51,7 +51,6 @@
                     android:layout_width="match_parent"
                     android:ems="10"
                     android:hint="@string/login"
-                    android:text="123"
                     android:inputType="textWebEmailAddress" />
 
                 <EditText
@@ -59,7 +58,6 @@
                     style="@style/edit_text.login"
                     android:layout_width="match_parent"
                     android:ems="10"
-                    android:text="123"
                     android:hint="@string/login_password"
                     android:inputType="textPassword" />
             </LinearLayout>
@@ -107,17 +105,17 @@
                   <ImageButton android:id="@+id/login_social_vk"
                                android:src="@drawable/vk"
                                android:layout_marginLeft="0dp"
-                               style="@style/button.login.social_networks"/>
+                               style="@style/button.signIn.social_networks"/>
                   <ImageButton android:id="@+id/login_social_fb"
                                android:src="@drawable/fb"
-                               style="@style/button.login.social_networks"/>
+                               style="@style/button.signIn.social_networks"/>
                   <ImageButton android:id="@+id/login_social_insta"
                                android:src="@drawable/insta"
-                               style="@style/button.login.social_networks"/>
+                               style="@style/button.signIn.social_networks"/>
                   <ImageButton android:id="@+id/login_social_gp"
                                android:layout_marginRight="0dp"
                                android:src="@drawable/g"
-                               style="@style/button.login.social_networks"/>
+                               style="@style/button.signIn.social_networks"/>
               </LinearLayout> -->
         </LinearLayout>
     </ScrollView>
