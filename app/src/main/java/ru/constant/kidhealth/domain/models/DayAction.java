@@ -3,6 +3,13 @@ package ru.constant.kidhealth.domain.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ColumnIgnore;
+import com.raizlabs.android.dbflow.annotation.ConflictAction;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
@@ -14,14 +21,20 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import ru.constant.kidhealth.database.MyDatabase;
+import ru.constant.kidhealth.database.converter.DateTimeConverter;
+import ru.kazantsev.template.domain.Validatable;
+import ru.kazantsev.template.util.TextUtils;
 
 @Data
-@EqualsAndHashCode(of = {"id","startTime","finishTime","dayOfWeek"})
+@EqualsAndHashCode(of = {"id","startTime","finishTime","dayOfWeek"}, callSuper = false)
 @ToString(of = {"id","startTime","finishTime","dayOfWeek"})
-public class DayAction implements Parcelable, Serializable {
+@Table(database = MyDatabase.class, allFields = true, updateConflict = ConflictAction.REPLACE, insertConflict = ConflictAction.REPLACE)
+public class DayAction extends BaseModel implements Parcelable, Serializable, Validatable {
 
     private static DateTimeFormatter inputFormat = DateTimeFormat.forPattern("HH:mm:ss");
-    
+
+    @PrimaryKey
     String id;
     String title;
     String description;
@@ -33,7 +46,11 @@ public class DayAction implements Parcelable, Serializable {
     String actionDate;
     String duration;
     String comment;
+    Boolean notified = false;
+    Boolean started = false;
+    Boolean finished = false;
 
+    @ColumnIgnore
     transient boolean invalidated = false;
     transient DateTime start;
     transient DateTime end;
@@ -60,7 +77,19 @@ public class DayAction implements Parcelable, Serializable {
         DateTime now = DateTime.now();
         return getActive() && now.isAfter(start) && now.isBefore(end);
     }
-    
+
+    public Boolean getNotified() {
+        return notified == null ? false :notified;
+    }
+
+    public Boolean getStarted() {
+        return started == null ? false :started;
+    }
+
+    public Boolean getFinished() {
+        return finished == null ? false :finished;
+    }
+
     public DayAction() {}
 
     protected DayAction(Parcel in) {
@@ -109,5 +138,11 @@ public class DayAction implements Parcelable, Serializable {
         dest.writeString(finishTime);
         dest.writeString(duration);
         dest.writeString(comment);
+    }
+
+    @Override
+    public boolean isValid() {
+        invalidateTime();
+        return TextUtils.notEmpty(id) && title != null && invalidated;
     }
 }

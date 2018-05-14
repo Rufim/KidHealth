@@ -11,7 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
-
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.kazantsev.template.activity.BaseActivity;

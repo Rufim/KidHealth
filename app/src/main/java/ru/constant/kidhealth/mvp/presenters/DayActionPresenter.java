@@ -22,6 +22,7 @@ import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.WeekDay;
 import ru.constant.kidhealth.mvp.views.DayActionView;
 import ru.constant.kidhealth.net.RestService;
+import ru.constant.kidhealth.service.DatabaseService;
 import ru.kazantsev.template.mvp.presenter.BasePresenter;
 import ru.kazantsev.template.util.PreferenceMaster;
 import ru.kazantsev.template.util.TextUtils;
@@ -37,6 +38,8 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
 
     @Inject
     RestService restService;
+    @Inject
+    DatabaseService databaseService;
     @Inject
     Context context;
 
@@ -145,6 +148,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
             startTime = DateTime.now();
             stopped = false;
             continueAction();
+            databaseService.startDayAction(dayAction);
         }
     }
 

@@ -1,7 +1,6 @@
 package ru.constant.kidhealth.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 

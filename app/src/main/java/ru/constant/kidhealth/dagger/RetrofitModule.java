@@ -22,8 +22,8 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.constant.kidhealth.net.AddTokenInterceptor;
-import ru.constant.kidhealth.net.RestService;
 import ru.constant.kidhealth.net.RefreshTokenAuthenticator;
+import ru.constant.kidhealth.net.RestService;
 import ru.kazantsev.template.net.interceptors.AddCookiesInterceptor;
 import ru.kazantsev.template.net.interceptors.ReceivedCookiesInterceptor;
 

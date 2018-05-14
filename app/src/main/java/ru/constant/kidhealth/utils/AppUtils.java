@@ -1,12 +1,9 @@
 package ru.constant.kidhealth.utils;
 
-import org.joda.time.DateTime;
-
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.domain.models.Token;
 import ru.constant.kidhealth.domain.models.User;
 import ru.kazantsev.template.util.PreferenceMaster;
-import ru.kazantsev.template.util.TextUtils;
 
 public class AppUtils {
 

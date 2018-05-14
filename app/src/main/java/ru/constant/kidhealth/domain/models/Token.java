@@ -2,8 +2,6 @@ package ru.constant.kidhealth.domain.models;
 
 import com.auth0.android.jwt.JWT;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 
 import lombok.Data;

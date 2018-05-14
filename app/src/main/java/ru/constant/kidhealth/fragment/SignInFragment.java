@@ -16,9 +16,12 @@ import butterknife.OnClick;
 import ru.constant.kidhealth.BuildConfig;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
+import ru.constant.kidhealth.domain.models.User;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
 import ru.constant.kidhealth.mvp.views.SignInView;
+import ru.constant.kidhealth.utils.AppUtils;
 import ru.kazantsev.template.fragments.BaseFragment;
+import ru.kazantsev.template.util.TextUtils;
 
 public class SignInFragment extends BaseFragment implements SignInView {
 
@@ -59,6 +62,11 @@ public class SignInFragment extends BaseFragment implements SignInView {
         if(BuildConfig.DEBUG) {
             editTextLogin.setText(BuildConfig.USERNAME);
             editTextPassword.setText(BuildConfig.PASSWORD);
+        }
+        User user = AppUtils.getLastUser();
+        if(user != null && TextUtils.notEmpty(user.getLogin())) {
+            editTextLogin.setText(user.getLogin());
+            editTextPassword.setText(user.getPassword());
         }
         return rootView;
     }

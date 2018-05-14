@@ -1,12 +1,10 @@
 package ru.constant.kidhealth.net;
 
-import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 import ru.constant.kidhealth.domain.models.Credentials;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.Token;
@@ -60,7 +58,7 @@ public class RestService {
         return transformActions(restApi.today(weekDay));
     }
 
-    public Observable<Map<DayOfWeek, List<DayAction>>> getWeek() {
+    public Observable<Map<WeekDay, List<DayAction>>> getWeek() {
        // return Observable.just(new ArrayList<>());
         return restApi.week();
     }

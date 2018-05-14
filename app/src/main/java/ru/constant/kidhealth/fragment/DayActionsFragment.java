@@ -7,10 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.PresenterType;
-import com.arellomobile.mvp.presenter.ProvidePresenterTag;
-
-import java.util.regex.Pattern;
 
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.domain.models.DayAction;
@@ -22,9 +18,7 @@ import ru.kazantsev.template.fragments.BaseFragment;
 import ru.kazantsev.template.fragments.mvp.MvpListFragment;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceView;
-import ru.kazantsev.template.util.AndroidSystemUtils;
 import ru.kazantsev.template.util.GuiUtils;
-import ru.kazantsev.template.util.TextUtils;
 
 import static ru.constant.kidhealth.utils.AppUtils.fixTime;
 
