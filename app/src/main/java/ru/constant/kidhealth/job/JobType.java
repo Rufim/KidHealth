@@ -8,8 +8,8 @@ import com.evernote.android.job.Job;
  * Created by 0shad on 01.03.2016.
  */
 public enum JobType {
-    FIRE_DAY_ACTION(DayActionJob.class);
-
+    FIRE_DAY_ACTION(DayActionJob.class),
+    PARENT_REMINDER(ParentReminderJob.class);
     private static final String TAG = JobType.class.getSimpleName();
 
     final Class<? extends Job> jobClass;

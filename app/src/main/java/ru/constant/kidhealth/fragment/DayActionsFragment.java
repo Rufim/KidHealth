@@ -1,12 +1,19 @@
 package ru.constant.kidhealth.fragment;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import net.vrallev.android.cat.Cat;
+
+import java.net.SocketTimeoutException;
+import java.util.List;
 
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.domain.models.DayAction;
@@ -18,6 +25,7 @@ import ru.kazantsev.template.fragments.BaseFragment;
 import ru.kazantsev.template.fragments.mvp.MvpListFragment;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceView;
+import ru.kazantsev.template.util.AndroidSystemUtils;
 import ru.kazantsev.template.util.GuiUtils;
 
 import static ru.constant.kidhealth.utils.AppUtils.fixTime;
@@ -41,11 +49,30 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter.setWeekDay(weekDay = getWeekDay());
         pastVisibleItems = getArg(PAST_VISIBLE_ITEMS, 0);
-        View root =  super.onCreateView(inflater, container, savedInstanceState);
-        if(getParentFragment().getArguments().containsKey(getWeekDay().name())) {
+        View root = super.onCreateView(inflater, container, savedInstanceState);
+        if (getParentFragment().getArguments().containsKey(getWeekDay().name())) {
             itemList.onRestoreInstanceState(getArguments().getParcelable(getWeekDay().name()));
+            adapter.notifyDataSetChanged();
+            isEnd = true;
         }
         return root;
+    }
+
+    @Override
+    public void onDataTaskException(Throwable ex) {
+        Cat.e(ex);
+        if(ex instanceof SocketTimeoutException) {
+            SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
+            if (fragment != null && fragment.hasDayActions(weekDay)) {
+                List<DayAction> actions = fragment.getDayActions(weekDay);
+                if (actions.size() > 0) {
+                    addFinalItems(actions);
+                } else {
+                    showEmptyView(R.string.day_action_no_actions);
+                }
+            }
+            getBaseActivity().showSnackbar(R.string.error_network);
+        }
     }
 
     private WeekDay getWeekDay() {
@@ -66,13 +93,34 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
     @Override
     protected ItemListAdapter<DayAction> newAdapter() {
-        return new DayActionsAdapter();
+        SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
+        if (fragment != null && fragment.hasDayActions(weekDay)) {
+            isEnd = true;
+            List<DayAction> actions = fragment.getDayActions(weekDay);
+            if (actions.size() == 0) {
+                showEmptyView(R.string.day_action_no_actions);
+            }
+            return new DayActionsAdapter(actions);
+        } else {
+            return new DayActionsAdapter();
+        }
+    }
+
+    @Override
+    public void finishLoad(List<DayAction> items, AsyncTask onElementsLoadedTask, Object[] loadedTaskParams) {
+        super.finishLoad(items, onElementsLoadedTask, loadedTaskParams);
+        ((SchedulePagerFragment)getParentFragment()).updateDayActions(weekDay, items);
     }
 
     public class DayActionsAdapter extends LazyItemListAdapter<DayAction> {
 
         public DayActionsAdapter() {
             super(R.layout.item_day_action);
+            bindOnlyRootViews = false;
+        }
+
+        public DayActionsAdapter(List<DayAction> initial) {
+            super(initial, R.layout.item_day_action);
             bindOnlyRootViews = false;
         }
 
@@ -90,10 +138,20 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
             GuiUtils.setText(holder, R.id.schedule_day_action_time, fixTime(item.getStartTime()) + " - " + fixTime(item.getFinishTime()));
             GuiUtils.setText(holder, R.id.schedule_day_action_title, item.getTitle());
             GuiUtils.setText(holder, R.id.schedule_day_action_comment, item.getComment());
-            if(item.isRunning()) {
-                GuiUtils.setVisibility(View.VISIBLE, (ViewGroup) holder.getItemView(), R.id.schedule_day_action_run);
+            ViewGroup root =(ViewGroup) holder.getItemView();
+            if (item.isRunning()) {
+                GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_run);
             } else {
-                GuiUtils.setVisibility(View.GONE, (ViewGroup) holder.getItemView(), R.id.schedule_day_action_run);
+                GuiUtils.setVisibility(View.GONE, root, R.id.schedule_day_action_run);
+            }
+            if(item.isFinished()) {
+                root.setBackgroundColor(getResources().getColor(R.color.md_green_400));
+            } else if(item.isStopped()) {
+                root.setBackgroundColor(getResources().getColor(R.color.md_red_400));
+            } else if(item.isPostponed()) {
+                root.setBackgroundColor(getResources().getColor(R.color.md_grey_400));
+            } else {
+                root.setBackgroundColor(getResources().getColor(R.color.transparent));
             }
         }
     }

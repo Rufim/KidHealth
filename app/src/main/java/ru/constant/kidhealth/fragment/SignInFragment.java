@@ -1,6 +1,7 @@
 package ru.constant.kidhealth.fragment;
 
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,10 @@ import ru.constant.kidhealth.BuildConfig;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
 import ru.constant.kidhealth.domain.models.User;
+import ru.constant.kidhealth.job.ParentReminderJob;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
 import ru.constant.kidhealth.mvp.views.SignInView;
+import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.utils.AppUtils;
 import ru.kazantsev.template.fragments.BaseFragment;
 import ru.kazantsev.template.util.TextUtils;
@@ -40,6 +43,8 @@ public class SignInFragment extends BaseFragment implements SignInView {
     TextView textViewBtnRegister;
     @BindView(R.id.textViewMessage)
     TextView textViewMessage;
+    @BindView(R.id.reminderFullText)
+    TextView reminderFullText;
 
     @Override
     public void onStart() {
@@ -68,6 +73,9 @@ public class SignInFragment extends BaseFragment implements SignInView {
             editTextLogin.setText(user.getLogin());
             editTextPassword.setText(user.getPassword());
         }
+        ParentReminderJob.startSchedule();
+        reminderFullText.setMovementMethod(LinkMovementMethod.getInstance());
+        reminderFullText.setText(getString(R.string.reminder_full_text, RestService.BASE_URL));
         return rootView;
     }
 
@@ -134,6 +142,7 @@ public class SignInFragment extends BaseFragment implements SignInView {
     @Override
     public void successSignIn() {
         Log.e("LOGIN", "SUCCESS");
+        AppUtils.toggleLoggedOnce();
         getBaseActivity().replaceFragment(SchedulePagerFragment.class);
     }
 }

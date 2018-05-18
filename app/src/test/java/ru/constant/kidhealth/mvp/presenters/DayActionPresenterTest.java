@@ -1,7 +1,6 @@
 package ru.constant.kidhealth.mvp.presenters;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +14,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.plugins.RxAndroidPlugins;
-import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import ru.constant.kidhealth.configs.RxImmediateSchedulerRule;
@@ -76,8 +73,8 @@ public class DayActionPresenterTest {
     private List<DayActions> actionsJson() {
         DayAction f = new DayAction();
         f.setId("10");
-        f.setStartTime("10:00:00");
-        f.setFinishTime("11:00:00");
+        f.setStartDateTime("10:00:00");
+        f.setFinishDateTime("11:00:00");
         f.setComment("Comment 5");
         f.setDayOfWeek(WeekDay.THURSDAY);
         f.setTitle("Title 5");
@@ -86,8 +83,8 @@ public class DayActionPresenterTest {
         f.setDescription("Description 5");
         DayAction s = new DayAction();
         s.setId("11");
-        s.setStartTime("11:00:00");
-        s.setFinishTime("12:30:00");
+        s.setStartDateTime("11:00:00");
+        s.setFinishDateTime("12:30:00");
         s.setComment("Comment 6");
         s.setDayOfWeek(WeekDay.THURSDAY);
         s.setTitle("Title 6");
@@ -103,18 +100,18 @@ public class DayActionPresenterTest {
 
     private Observable<List<DayActions>> actionsCustom() {
         DayAction f = new DayAction();
-        f.setStartTime("08:00");
-        f.setFinishTime("09:00");
+        f.setStartDateTime("08:00");
+        f.setFinishDateTime("09:00");
         f.setComment("Кросс по стадиону");
         f.setTitle("Разминка");
         DayAction s = new DayAction();
-        s.setStartTime("13:45");
-        s.setFinishTime("14:00");
+        s.setStartDateTime("13:45");
+        s.setFinishDateTime("14:00");
         s.setComment("Отжимания");
         s.setTitle("3 подхода по 40-50 раз");
         DayAction t = new DayAction();
-        t.setStartTime("17:40");
-        t.setFinishTime("18:00");
+        t.setStartDateTime("17:40");
+        t.setFinishDateTime("18:00");
         t.setComment("4 подхода по 60");
         t.setTitle("Присед");
         ArrayList<DayActions> actions = new ArrayList<>();

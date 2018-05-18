@@ -1,7 +1,6 @@
 package ru.constant.kidhealth.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.PresenterType;
 import com.arellomobile.mvp.presenter.ProvidePresenterTag;
 
 import butterknife.BindView;
@@ -35,7 +33,7 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         return show(fragment, DayActionFragment.class, DAY_ARG, dayAction);
     }
 
-    @InjectPresenter(type = PresenterType.GLOBAL)
+    @InjectPresenter
     DayActionPresenter presenter;
 
     @BindView(R.id.load_more)
@@ -48,22 +46,23 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
     TextView dayActionTitle;
     @BindView(R.id.day_action_comment)
     TextView dayActionComment;
+    @BindView(R.id.day_action_status)
+    TextView dayActionStatus;
     @BindView(R.id.day_action_time_passed)
     TextView dayActionTimePassed;
     @BindView(R.id.day_action_start)
     Button dayActionStart;
     @BindView(R.id.day_action_cancel)
     Button dayActionCancel;
-    @BindView(R.id.day_action_pass)
+    @BindView(R.id.day_action_postpone)
     Button dayActionPass;
 
     private DayAction dayAction;
-    private Handler forButtons;
     private Runnable postInvalidate;
 
-    @ProvidePresenterTag(presenterClass = DayActionsPresenter.class, type = PresenterType.GLOBAL)
+    @ProvidePresenterTag(presenterClass = DayActionsPresenter.class)
     String provideTag() {
-        if(dayAction == null) {
+        if (dayAction == null) {
             dayAction = getArg(DAY_ARG, null);
         }
         return dayAction.toString();
@@ -71,26 +70,25 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        forButtons = new Handler();
-        presenter.setDayAction(dayAction = getArg(DAY_ARG, null));
-        View view = inflater.inflate(R.layout.fragment_day_action, container, false);
-        return view;
+        return  inflater.inflate(R.layout.fragment_day_action, container, false);
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) view;
         bind(rootView);
+        updateTime("00:00");
+        presenter.setDayAction(dayAction = getArg(DAY_ARG, null));
         if (dayAction != null) {
             GuiUtils.setText(rootView, R.id.day_action_time, AppUtils.fixTime(dayAction.getStartTime()) + " - " + AppUtils.fixTime(dayAction.getFinishTime()));
             GuiUtils.setText(rootView, R.id.day_action_title, dayAction.getTitle());
             GuiUtils.setText(rootView, R.id.day_action_comment, dayAction.getComment());
-            if (dayAction.getActive()) {
+            if (dayAction.isActive()) {
                 dayActionActive.setBackgroundResource(R.drawable.green_light);
             } else {
                 dayActionActive.setBackgroundResource(R.drawable.red_light);
             }
-            presenter.invalidateActions();
         }
     }
 
@@ -107,41 +105,77 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
     }
 
     @Override
-    public void hideButton(@IdRes int id, long delay) {
-        if (delay <= 0) {
-            switch (id) {
-                case R.id.day_action_start:
-                    dayActionStart.setEnabled(false);
-                    break;
-                case R.id.day_action_cancel:
-                    dayActionCancel.setVisibility(View.GONE);
-                    break;
-                case R.id.day_action_pass:
-                    dayActionPass.setVisibility(View.GONE);
-                    break;
-            }
-        } else {
-            if(postInvalidate != null) {
-                forButtons.removeCallbacks(postInvalidate);
-            }
-            postInvalidate = () -> presenter.invalidateActions();
-            forButtons.postDelayed(postInvalidate, delay);
+    public void switchStateButton(@IdRes int id, boolean state) {
+        switch (id) {
+            case R.id.day_action_start:
+                dayActionStart.setEnabled(state);
+                break;
+            case R.id.day_action_cancel:
+                dayActionCancel.setEnabled(state);
+                break;
+            case R.id.day_action_postpone:
+                dayActionPass.setEnabled(state);
+                break;
         }
     }
 
     @Override
-    public void onStarted() {
+    public void cleanState() {
+        dayActionStart.setEnabled(false);
+        dayActionCancel.setEnabled(false);
+        dayActionPass.setEnabled(false);
+        dayActionStatus.setVisibility(View.INVISIBLE);
+    }
 
+    @Override
+    public void onStarted() {
+        switchStateButton(R.id.day_action_postpone, false);
+        switchStateButton(R.id.day_action_cancel, true);
+        switchStateButton(R.id.day_action_start, false);
+        getBaseActivity().showSnackbar(R.string.day_action_started);
+        dayActionStatus.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onCanceled() {
+        switchStateButton(R.id.day_action_postpone, false);
+        switchStateButton(R.id.day_action_cancel, false);
+        switchStateButton(R.id.day_action_start, false);
+        dayActionStatus.setVisibility(View.VISIBLE);
+        dayActionStatus.setText(R.string.day_action_canceled);
+        getBaseActivity().showSnackbar(R.string.day_action_canceled);
+        dayActionStatus.setTextColor(getResources().getColor(R.color.md_red_400));
+        getBaseActivity().onBackPressed();
     }
 
     @Override
     public void updateTime(String time) {
-        getView().post(() -> dayActionTimePassed.setText(time));
+        if(isAdded()) getView().post(() -> {if(dayActionTimePassed!= null) dayActionTimePassed.setText(time);});
     }
 
     @Override
     public void onFinished() {
+        switchStateButton(R.id.day_action_postpone, false);
+        switchStateButton(R.id.day_action_cancel, false);
+        switchStateButton(R.id.day_action_start, false);
+        getBaseActivity().showSnackbar(R.string.day_action_finished);
+        dayActionStatus.setVisibility(View.VISIBLE);
+        dayActionStatus.setText(R.string.day_action_finished);
+        dayActionStatus.setTextColor(getResources().getColor(R.color.md_green_400));
+    }
 
+    @Override
+    public void onPostpone() {
+        getBaseActivity().showSnackbar(R.string.day_action_postponed);
+        getBaseActivity().onBackPressed();
+    }
+
+    @Override
+    public void onActionFailure() {
+        switchStateButton(R.id.day_action_postpone, false);
+        switchStateButton(R.id.day_action_cancel, false);
+        switchStateButton(R.id.day_action_start, false);
+        getBaseActivity().showSnackbar(R.string.error);
     }
 
     @OnClick(R.id.day_action_start)
@@ -154,8 +188,8 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         presenter.stopAction();
     }
 
-    @OnClick(R.id.day_action_pass)
+    @OnClick(R.id.day_action_postpone)
     public void onDayActionPassClicked() {
-
+        presenter.postponeAction();
     }
 }

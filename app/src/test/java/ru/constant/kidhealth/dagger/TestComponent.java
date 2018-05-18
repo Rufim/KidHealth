@@ -7,7 +7,7 @@ import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.constant.kidhealth.mvp.presenters.DayActionsPresenter;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
 import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
-import ru.constant.kidhealth.net.RestService;
+import ru.constant.kidhealth.service.RestService;
 
 public class TestComponent implements AppComponent {
     RetrofitModule retrofitModule = new MockRetrofitModule();

@@ -12,7 +12,7 @@ import io.reactivex.disposables.Disposable;
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.mvp.views.SignInView;
-import ru.constant.kidhealth.net.RestService;
+import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.utils.AppUtils;
 import ru.kazantsev.template.mvp.presenter.BasePresenter;
 import ru.kazantsev.template.util.RxUtils;

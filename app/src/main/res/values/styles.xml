@@ -10,8 +10,9 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="textColorSnackbar">@color/white</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <!--<item name="android:textColor">@color/white</item>-->
+        <item name="android:textColor">@color/md_grey_900</item>
         <item name="android:navigationBarColor">@color/primary_dark</item>
         <item name="android:windowBackground">@color/xxlight_grey</item>
         <item name="colorControlNormal">@color/gray</item>

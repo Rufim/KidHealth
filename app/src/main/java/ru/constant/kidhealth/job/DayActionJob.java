@@ -14,12 +14,15 @@ import android.util.Log;
 
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
+import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -47,6 +50,8 @@ public class DayActionJob extends Job {
 
     private static final String TAG = DayActionJob.class.getSimpleName();
     public static int jobId = -1;
+    public final static int NOTIFICATION_ACTION_ID = 1000;
+    public final static String  NOTIFICATION_ACTION_NAME = "action_";
 
     public DayActionJob() {
         App.getAppComponent().inject(this);
@@ -62,10 +67,10 @@ public class DayActionJob extends Job {
         try {
             String id = params.getExtras().getString(DAY_ACTION_ID, "");
             DayAction next = null;
-            if(TextUtils.notEmpty(id)) {
+            if (TextUtils.notEmpty(id)) {
                 DayAction action = databaseService.getDayAction(id);
-                if(action != null && action.isValid()) {
-                    if(!action.getNotified()) {
+                if (action != null && action.isValid()) {
+                    if (!action.isNotified()) {
                         sendActionNotification(context, action);
                         databaseService.notifyDayAction(action);
                     }
@@ -74,34 +79,49 @@ public class DayActionJob extends Job {
                     Log.e(TAG, "action not valid or null" + action);
                 }
             }
-            if(next == null) {
+            if (next == null) {
                 next = databaseService.nextDayAction(DateTime.now());
             }
             startSchedule(next);
-    } catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Unknown exception", e);
             return Result.FAILURE;
         }
         return Result.SUCCESS;
     }
 
-    public static void stop() {
-        if (jobId > 0) {
-            JobManager.instance().cancel(jobId);
+    public static void stop(Context context) {
+        AppJobCreator.cancelJobs(JobType.FIRE_DAY_ACTION);
+        AppJobCreator.cancelJobRequests(JobType.FIRE_DAY_ACTION);
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        try {
+            notificationManager.cancelAll();
+        } catch (Throwable e) { }
+    }
+
+    public static void startSchedule(DayAction dayAction, long delay) {
+        if (dayAction != null && dayAction.isValid()) {
+            AppJobCreator.cancelJobs(JobType.FIRE_DAY_ACTION);
+            AppJobCreator.cancelJobRequests(JobType.FIRE_DAY_ACTION);
+            PersistableBundleCompat bundleCompat = new PersistableBundleCompat();
+            bundleCompat.putString(DAY_ACTION_ID, dayAction.getId());
+            jobId = AppJobCreator.request(JobType.FIRE_DAY_ACTION)
+                    .setExact(delay)
+                    .setUpdateCurrent(true)
+                    .setExtras(bundleCompat)
+                    .build()
+                    .schedule();
+        } else {
+            Log.e(TAG, "action not valid or null " + dayAction);
         }
     }
 
     public static void startSchedule(DayAction dayAction) {
-        if(dayAction != null && dayAction.isValid() && !dayAction.getNotified()) {
-            AppJobCreator.cancelJobs(JobType.FIRE_DAY_ACTION);
-            PersistableBundleCompat bundleCompat = new PersistableBundleCompat();
-            bundleCompat.putString(DAY_ACTION_ID, dayAction.getId());
-            jobId = AppJobCreator.request(JobType.FIRE_DAY_ACTION)
-                    .setExact(dayAction.getStart().getMillis())
-                    .setExtras(bundleCompat)
-                    .build()
-                    .schedule();
-        }  else {
+        if (dayAction != null && !dayAction.isNotified()) {
+            startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart().minusSeconds(15)).getMillis());
+            //startSchedule(dayAction, 60000);
+        } else {
             Log.e(TAG, "action not valid or null " + dayAction);
         }
     }
@@ -120,6 +140,7 @@ public class DayActionJob extends Job {
     public static void sendActionNotification(Context context, Map<String, String> data) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setAction(NOTIFICATION_ACTION_NAME + data.get(DAY_ACTION_ID));
         intent.putExtra(DAY_ACTION_ID, data.get(DAY_ACTION_ID));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -139,8 +160,10 @@ public class DayActionJob extends Job {
         }
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(data.hashCode(), notificationBuilder.build());
+        try {
+            notificationManager.cancel(NOTIFICATION_ACTION_ID);
+        } catch (Throwable e) { }
+        notificationManager.notify(NOTIFICATION_ACTION_ID, notificationBuilder.build());
     }
 
     public static NotificationChannel getNotificationChannel(Context context) {
@@ -148,9 +171,9 @@ public class DayActionJob extends Job {
             if (mChannel_dayActions == null) {
                 NotificationManager mNotificationManager =
                         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                String CHANNEL_ID = "kidhealth_channel_01";
-                int importance = NotificationManager.IMPORTANCE_LOW;
-                mChannel_dayActions = new NotificationChannel(CHANNEL_ID, "Kidhealth channel", importance);
+                String CHANNEL_ID = "kidhealth_channel_actions";
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                mChannel_dayActions = new NotificationChannel(CHANNEL_ID, "Kidhealth channel actions", importance);
                 mNotificationManager.createNotificationChannel(mChannel_dayActions);
             }
             return mChannel_dayActions;

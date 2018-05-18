@@ -41,7 +41,8 @@ public class AppJobCreator implements JobCreator {
     }
 
     public static void cancelJobRequests(JobType type) {
-        Stream.of(getJobRequests(type)).map(r -> JobManager.instance().cancel(r.getJobId()));
+        JobManager.instance().cancelAllForTag(type.name());
+        Stream.of(getJobRequests(type)).map(r -> r.cancelAndEdit());
     }
 
     public static void cancelJob(int jobId) {

@@ -7,6 +7,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.raizlabs.android.dbflow.config.DatabaseDefinition;
 import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.OperatorGroup;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -19,12 +20,14 @@ import net.vrallev.android.cat.Cat;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import ru.constant.kidhealth.Constants;
 import ru.constant.kidhealth.domain.models.DayAction;
+import ru.constant.kidhealth.domain.models.DayActionType;
 import ru.constant.kidhealth.domain.models.DayAction_Table;
 import ru.constant.kidhealth.domain.models.WeekDay;
 import ru.kazantsev.template.util.DBFlowUtils;
@@ -40,10 +43,31 @@ public class DatabaseService {
     }
 
     public void insertOrUpdateScheduleForWeek(Map<WeekDay, List<DayAction>> weekDayActions) {
-        DBFlowUtils.dbFlowDelete(DayAction.class);
+        List<DayAction> oldActions = SQLite.select().from(DayAction.class).queryList();
+        List<DayAction> newActions = new ArrayList<>();
         for (WeekDay weekDay : WeekDay.values()) {
-            doAction(Action.INSERT, Stream.of(weekDayActions.get(weekDay)).filter(DayAction::isValid).collect(Collectors.toList()));
+            newActions.addAll(weekDayActions.get(weekDay));
         }
+        DBFlowUtils.dbFlowDelete(DayAction.class);
+        oldActions.retainAll(newActions);
+        Stream.of(newActions).forEach(action -> {
+            if(action.isValid() && !oldActions.contains(action)) {
+                oldActions.add(action);
+            }
+        });
+        doAction(Action.INSERT, oldActions);
+    }
+
+    public void insertOrUpdateScheduleForDay(WeekDay weekDay, List<DayAction> newActions) {
+        List<DayAction> oldActions = SQLite.select().from(DayAction.class).where(DayAction_Table.dayOfWeek.eq(weekDay)).queryList();
+        DBFlowUtils.dbFlowDelete(DayAction.class, DayAction_Table.dayOfWeek.eq(weekDay));
+        oldActions.retainAll(newActions);
+        Stream.of(newActions).forEach(action -> {
+            if(action.isValid() && !oldActions.contains(action)) {
+                oldActions.add(action);
+            }
+        });
+        doAction(Action.INSERT, oldActions);
     }
 
     public List<DayAction> getDayActions(WeekDay weekDay) {
@@ -62,6 +86,11 @@ public class DatabaseService {
         return SQLite.select()
                 .from(DayAction.class)
                 .where(DayAction_Table.start.greaterThan(now))
+                .and(DayAction_Table.active.eq(true))
+                .and(OperatorGroup.clause().or(DayAction_Table.finished.eq(false)).or(DayAction_Table.finished.isNull()))
+                .and(OperatorGroup.clause().or(DayAction_Table.started.eq(false)).or(DayAction_Table.started.isNull()))
+                //.and(OperatorGroup.clause().or(DayAction_Table.type.eq(DayActionType.EDUCATION)).or(DayAction_Table.type.eq(DayActionType.TRAINING)))
+                .and(OperatorGroup.clause().or(DayAction_Table.notified.eq(false)).or(DayAction_Table.notified.isNull()))
                 .orderBy(DayAction_Table.start, true)
                 .querySingle();
     }
@@ -79,6 +108,15 @@ public class DatabaseService {
         }
     }
 
+    public void stopDayAction(DayAction dayAction) {
+        if(dayAction != null && dayAction.isValid()) {
+            dayAction.setStopped(true);
+            dayAction.setStarted(false);
+            dayAction.setFinished(false);
+            doAction(Action.UPDATE, dayAction);
+        }
+    }
+
     public void finishDayAction(DayAction dayAction) {
         if(dayAction != null && dayAction.isValid()) {
             dayAction.setStarted(true);
@@ -88,6 +126,14 @@ public class DatabaseService {
     }
 
 
+    public void postponeDayAction(DayAction dayAction) {
+        if(dayAction != null && dayAction.isValid()) {
+            dayAction.setPostponed(true);
+            dayAction.setStarted(false);
+            dayAction.setFinished(false);
+            doAction(Action.UPDATE, dayAction);
+        }
+    }
 
 
     public <C extends BaseModel> C doAction(Action action, C value) {

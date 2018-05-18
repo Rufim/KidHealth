@@ -49,7 +49,6 @@
     <string name="free_coffee_got_it">Понял</string>
     <string name="edit_user_add_points">Добавить очки</string>
 
-
     <!-- ERRORS -->
     <string name="error_required_field">Обязательно для заполнения</string>
     <string name="error_email_not_valid">Введите корректный email адрес</string>
@@ -68,7 +67,14 @@
     <string name="day_action_time_passed">Время с начала:</string>
     <string name="day_action_start">Начать</string>
     <string name="day_action_stop">Отменить</string>
-    <string name="day_action_pass">Отложить на \n10 минут</string>
-
-
+    <string name="day_action_postpone">Отложить на \n10 минут</string>
+    <string name="day_action_started">Событие начато</string>
+    <string name="day_action_finished">Событие завершено</string>
+    <string name="day_action_postponed">Событие отложено</string>
+    <string name="day_action_canceled">Событие отменено</string>
+    <string name="day_action_no_actions">В этот день ничего не запланированно.</string>
+    <string name="common_logout">Выход</string>
+    <string name="reminder_title">Напоминание!</string>
+    <string name="reminder_text">Не забудьте показать приложение родителям</string>
+    <string name="reminder_full_text">Напомоните своим родителям заригестрировать вас на сайте %s</string>
 </resources>

@@ -90,33 +90,24 @@
                     android:textColor="@color/red_dark"
                     android:visibility="gone" />
             </LinearLayout>
-            <!--
-              <TextView android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/login_enter_through"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:textSize="@dimen/text_large"/>
 
-              <LinearLayout android:layout_width="wrap_content"
+
+              <LinearLayout android:layout_width="match_parent"
                             android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/spacing_small"
+                            android:background="@drawable/login_reminder"
+                            android:padding="12dp"
+                            android:layout_marginTop="@dimen/spacing_huge"
                             android:layout_height="wrap_content">
-                  <ImageButton android:id="@+id/login_social_vk"
-                               android:src="@drawable/vk"
-                               android:layout_marginLeft="0dp"
-                               style="@style/button.signIn.social_networks"/>
-                  <ImageButton android:id="@+id/login_social_fb"
-                               android:src="@drawable/fb"
-                               style="@style/button.signIn.social_networks"/>
-                  <ImageButton android:id="@+id/login_social_insta"
-                               android:src="@drawable/insta"
-                               style="@style/button.signIn.social_networks"/>
-                  <ImageButton android:id="@+id/login_social_gp"
-                               android:layout_marginRight="0dp"
-                               android:src="@drawable/g"
-                               style="@style/button.signIn.social_networks"/>
-              </LinearLayout> -->
+                        <TextView
+                            android:id="@+id/reminderFullText"
+                            android:text="@string/reminder_full_text"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:autoLink="web"
+                            android:textSize="12sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+              </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -130,6 +130,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:3.4.1"
     implementation "com.google.dagger:dagger:$daggerVersion"
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation "com.google.android.gms:play-services-gcm:11.0.2"
     testImplementation "junit:junit:4.12"
     testImplementation "org.mockito:mockito-all:1.10.19"
     testImplementation "org.hamcrest:hamcrest-all:1.3"

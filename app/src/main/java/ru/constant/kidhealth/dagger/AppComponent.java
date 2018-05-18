@@ -13,7 +13,7 @@ import ru.constant.kidhealth.mvp.presenters.DayActionPresenter;
 import ru.constant.kidhealth.mvp.presenters.DayActionsPresenter;
 import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
 import ru.constant.kidhealth.mvp.presenters.SignInPresenter;
-import ru.constant.kidhealth.net.RestService;
+import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.service.DatabaseService;
 
 /**
