@@ -123,7 +123,7 @@ public class DayActionJob extends Job {
 
     public static void startSchedule(DayAction dayAction) {
         if (dayAction != null && !dayAction.isNotified()) {
-            startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart().minusSeconds(15)).getMillis());
+            startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart()).getMillis());
             //startSchedule(dayAction, 60000);
         } else {
             Log.e(TAG, "action not valid or null " + dayAction);

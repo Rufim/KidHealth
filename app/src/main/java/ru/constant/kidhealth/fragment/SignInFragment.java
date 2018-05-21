@@ -68,8 +68,8 @@ public class SignInFragment extends BaseFragment implements SignInView {
         bind(rootView);
         ((MainActivity)getActivity()).hideKeyboard();
         if(BuildConfig.DEBUG) {
-            editTextLogin.setText(BuildConfig.USERNAME);
-            editTextPassword.setText(BuildConfig.PASSWORD);
+          //  editTextLogin.setText(BuildConfig.USERNAME);
+          //  editTextPassword.setText(BuildConfig.PASSWORD);
         }
         User user = AppUtils.getLastUser();
         if(user != null && TextUtils.notEmpty(user.getLogin())) {

@@ -20,6 +20,7 @@ import net.vrallev.android.cat.Cat;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.text.DateFormatSymbols;
@@ -63,7 +64,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
         getBaseActivity().getToolbarShadow().setVisibility(View.GONE);
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(UpdateAction updateAction) {
         DayAction action = updateAction.message;
         if(action != null) {
@@ -78,7 +79,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
                             for (int j = 0; j < dayActionsSrc.size(); j++) {
                                 if (dayActionsSrc.get(j).getId().equals(action.getId())) {
                                         dayActionsSrc.set(j, action);
-                                        dayActionsFragment.getAdapter().notifyItemChanged(j);
+                                        dayActionsFragment.getAdapter().notifyDataSetChanged();
                                         break;
                                 }
                             }
