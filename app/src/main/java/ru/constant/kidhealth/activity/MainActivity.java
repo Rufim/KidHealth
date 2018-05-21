@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity {
             restoreFragment(sectionFragment);
         } else {
             Token token = AppUtils.getToken();
-            if(!token.isValid() || false) {
+            if(!token.isValid()) {
                 replaceFragment(SignInFragment.class);
             } else {
                 replaceFragment(SchedulePagerFragment.class);

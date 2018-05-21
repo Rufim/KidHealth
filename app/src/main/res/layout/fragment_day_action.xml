@@ -132,6 +132,16 @@
                     android:textColor="@color/md_grey_300"
                     android:layout_width="150dp"
                     android:layout_height="40dp" />
+                <Button
+                    android:id="@+id/day_action_finish"
+                    android:background="@drawable/rounded_black_button"
+                    android:layout_margin="@dimen/spacing_medium"
+                    android:text="@string/day_action_finish"
+                    android:textAllCaps="false"
+                    android:visibility="gone"
+                    android:textColor="@color/md_grey_300"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

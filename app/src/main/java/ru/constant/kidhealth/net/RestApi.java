@@ -1,6 +1,8 @@
 package ru.constant.kidhealth.net;
 
 
+import org.joda.time.DateTime;
+
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,10 @@ import ru.constant.kidhealth.domain.models.WeekDay;
  */
 public interface RestApi {
 
+    enum ActionCommand {
+        START,STOP,POSTPONE,FINISH;
+    }
+
 	@POST("/auth/signIn")
     Observable<Token> signIn(@Body Credentials credentials);
 
@@ -42,18 +48,9 @@ public interface RestApi {
     @GET("api/schedule/{weekDay}")
     Observable<List<DayAction>> weekDay(@Path("weekDay") String weekDay);
 
-    @POST("api/schedule/action/{actionId}/start")
-    Observable<DayAction> startAction(@Path("actionId") String id);
+    @POST("api/schedule/action/{actionId}")
+    Observable<DayAction> actionCommand(@Path("actionId") String id, @Query("command") ActionCommand command, @Query("dateTime") DateTime dateTime);
 
-    @POST("api/schedule/action/{actionId}/postpone")
-    Observable<DayAction> postponeAction(@Path("actionId") String id);
-
-    @POST("api/schedule/action/{actionId}/stop")
-    Observable<DayAction> stopAction(@Path("actionId") String id);
-
-    @POST("api/schedule/action/{actionId}/finish")
-    Observable<DayAction> finishAction(@Path("actionId") String id);
-
-    @GET("api/schedule/action")
-    Observable<DayAction> getAction(@Query("actionId") String id);
+    @GET("api/schedule/action/{actionId}")
+    Observable<DayAction> getAction(@Path("actionId") String id);
 }

@@ -31,6 +31,7 @@ import ru.constant.kidhealth.mvp.views.DayActionView;
 import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.service.DatabaseService;
 import ru.kazantsev.template.mvp.presenter.BasePresenter;
+import ru.kazantsev.template.util.GuiUtils;
 import ru.kazantsev.template.util.PreferenceMaster;
 import ru.kazantsev.template.util.TextUtils;
 
@@ -140,7 +141,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                             preferenceMaster.putValue(PASSED_TIME, fmt.print(startTime)).applay();
                             getViewState().updateTime(timeFormatter.print(new Duration(startTime, now).toPeriod()));
                         } else {
-
                             onFinish();
                         }
                     }
@@ -148,6 +148,9 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
             }, 0, 1000);
         } else {
             onReset();
+            if(DateTime.now().isAfter(endTime)) {
+                onFinish();
+            }
         }
     }
 
@@ -213,13 +216,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         ));
     }
 
-    private void onReset() {
-        stopTimer();
-        getViewState().updateTime("00:00");
-    }
-
-    private void onFinish() {
-        stopTimer();
+    public void finishAction() {
         dispouseOnDestroy(restService.finishAction(dayAction.getId()).subscribe(
                 response -> {
                     if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.FINISHED) {
@@ -236,6 +233,21 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     getViewState().onActionFailure();
                 }
         ));
+    }
+
+    private void onReset() {
+        stopTimer();
+        getViewState().updateTime("00:00");
+    }
+
+    private void onFinish() {
+        stopTimer();
+        GuiUtils.runInUI(context, new GuiUtils.RunUIThread() {
+            @Override
+            public void run(Object... var) {
+                getViewState().onFinish();
+            }
+        });
     }
 
     private void stopTimer() {

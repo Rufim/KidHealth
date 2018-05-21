@@ -56,6 +56,8 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
     Button dayActionCancel;
     @BindView(R.id.day_action_postpone)
     Button dayActionPass;
+    @BindView(R.id.day_action_finish)
+    Button dayActionFinish;
 
     private DayAction dayAction;
     private Runnable postInvalidate;
@@ -116,6 +118,9 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
             case R.id.day_action_postpone:
                 dayActionPass.setEnabled(state);
                 break;
+            case R.id.day_action_finish:
+                dayActionFinish.setEnabled(state);
+                break;
         }
     }
 
@@ -134,6 +139,9 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_start, false);
         getBaseActivity().showSnackbar(R.string.day_action_started);
         dayActionStatus.setVisibility(View.INVISIBLE);
+        switchStateButton(R.id.day_action_finish, false);
+        dayActionFinish.setVisibility(View.VISIBLE);
+        dayActionPass.setVisibility(View.GONE);
     }
 
     @Override
@@ -150,18 +158,26 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
 
     @Override
     public void updateTime(String time) {
-        if(isAdded()) getView().post(() -> {if(dayActionTimePassed!= null) dayActionTimePassed.setText(time);});
+        if(isAdded()) getView().post(() -> { if(dayActionTimePassed!= null) dayActionTimePassed.setText(time);});
+    }
+
+    @Override
+    public void onFinish() {
+        switchStateButton(R.id.day_action_postpone, false);
+        switchStateButton(R.id.day_action_cancel, false);
+        switchStateButton(R.id.day_action_start, false);
+        dayActionStatus.setText(R.string.day_action_finished);
+        dayActionStatus.setVisibility(View.VISIBLE);
+        dayActionStatus.setTextColor(getResources().getColor(R.color.md_green_400));
+        switchStateButton(R.id.day_action_finish, true);
+        dayActionFinish.setVisibility(View.VISIBLE);
+        dayActionPass.setVisibility(View.GONE);
     }
 
     @Override
     public void onFinished() {
-        switchStateButton(R.id.day_action_postpone, false);
-        switchStateButton(R.id.day_action_cancel, false);
-        switchStateButton(R.id.day_action_start, false);
         getBaseActivity().showSnackbar(R.string.day_action_finished);
-        dayActionStatus.setVisibility(View.VISIBLE);
-        dayActionStatus.setText(R.string.day_action_finished);
-        dayActionStatus.setTextColor(getResources().getColor(R.color.md_green_400));
+        getBaseActivity().onBackPressed();
     }
 
     @Override
@@ -191,5 +207,10 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
     @OnClick(R.id.day_action_postpone)
     public void onDayActionPassClicked() {
         presenter.postponeAction();
+    }
+
+    @OnClick(R.id.day_action_finish)
+    public void onFinishClicked() {
+        presenter.finishAction();
     }
 }

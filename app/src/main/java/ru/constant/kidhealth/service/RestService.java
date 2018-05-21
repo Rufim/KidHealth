@@ -1,5 +1,7 @@
 package ru.constant.kidhealth.service;
 
+import org.joda.time.DateTime;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,7 @@ import ru.kazantsev.template.util.RxUtils;
 
 public class RestService {
 
-   // public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
+    //public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
     public static String BASE_URL = "http://192.168.101.148:8080";
     private RestApi restApi;
 
@@ -152,19 +154,19 @@ public class RestService {
     }
 
     public Observable<DayAction> startAction(String actionId) {
-        return restApi.startAction(actionId).compose(RxUtils.applySchedulers());
+        return restApi.actionCommand(actionId, RestApi.ActionCommand.START, DateTime.now()).compose(RxUtils.applySchedulers());
     }
 
     public Observable<DayAction> postponeAction(String actionId) {
-        return restApi.postponeAction(actionId).compose(RxUtils.applySchedulers());
+        return restApi.actionCommand(actionId, RestApi.ActionCommand.POSTPONE, DateTime.now()).compose(RxUtils.applySchedulers());
     }
 
     public Observable<DayAction> stopAction(String actionId) {
-        return restApi.stopAction(actionId).compose(RxUtils.applySchedulers());
+        return restApi.actionCommand(actionId, RestApi.ActionCommand.STOP, DateTime.now()).compose(RxUtils.applySchedulers());
     }
 
     public Observable<DayAction> finishAction(String actionId) {
-        return restApi.finishAction(actionId).compose(RxUtils.applySchedulers());
+        return restApi.actionCommand(actionId, RestApi.ActionCommand.FINISH, DateTime.now()).compose(RxUtils.applySchedulers());
     }
 
 }

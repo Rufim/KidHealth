@@ -24,6 +24,8 @@ public interface DayActionView extends MvpView {
 
     void updateTime(String time);
 
+    void onFinish();
+
     void onFinished();
 
     void onPostpone();
