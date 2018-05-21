@@ -127,6 +127,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         stopTimer();
         timer = new Timer();
         if (startTime.isBefore(endTime)) {
+            GuiUtils.runInUI(context, var -> getViewState().onStarted());
             preferenceMaster.putValue(LAST_TIME_ID, dayAction.getId())
                     .putValue(START_TIME, dayAction.getStartDateTime())
                     .putValue(FINISH_TIME, dayAction.getFinishDateTime())
@@ -242,12 +243,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
 
     private void onFinish() {
         stopTimer();
-        GuiUtils.runInUI(context, new GuiUtils.RunUIThread() {
-            @Override
-            public void run(Object... var) {
-                getViewState().onFinish();
-            }
-        });
+        GuiUtils.runInUI(context, var -> getViewState().onFinish());
     }
 
     private void stopTimer() {
@@ -320,5 +316,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         getViewState().switchStateButton(R.id.day_action_start, false);
         getViewState().switchStateButton(R.id.day_action_postpone, false);
         getViewState().switchStateButton(R.id.day_action_cancel, false);
+        getViewState().switchStateButton(R.id.day_action_finish, false);
     }
 }

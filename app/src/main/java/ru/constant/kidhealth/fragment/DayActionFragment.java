@@ -91,6 +91,9 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
             } else {
                 dayActionActive.setBackgroundResource(R.drawable.red_light);
             }
+            if(dayAction.isStarted()) {
+                onStarted();
+            }
         }
     }
 
@@ -137,7 +140,6 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_postpone, false);
         switchStateButton(R.id.day_action_cancel, true);
         switchStateButton(R.id.day_action_start, false);
-        getBaseActivity().showSnackbar(R.string.day_action_started);
         dayActionStatus.setVisibility(View.INVISIBLE);
         switchStateButton(R.id.day_action_finish, false);
         dayActionFinish.setVisibility(View.VISIBLE);
@@ -149,11 +151,12 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_postpone, false);
         switchStateButton(R.id.day_action_cancel, false);
         switchStateButton(R.id.day_action_start, false);
+        switchStateButton(R.id.day_action_finish, false);
         dayActionStatus.setVisibility(View.VISIBLE);
         dayActionStatus.setText(R.string.day_action_canceled);
-        getBaseActivity().showSnackbar(R.string.day_action_canceled);
         dayActionStatus.setTextColor(getResources().getColor(R.color.md_red_400));
         getBaseActivity().onBackPressed();
+        getBaseActivity().showSnackbar(R.string.day_action_canceled);
     }
 
     @Override
@@ -191,12 +194,14 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_postpone, false);
         switchStateButton(R.id.day_action_cancel, false);
         switchStateButton(R.id.day_action_start, false);
+        switchStateButton(R.id.day_action_finish, false);
         getBaseActivity().showSnackbar(R.string.error);
     }
 
     @OnClick(R.id.day_action_start)
     public void onDayActionStartClicked() {
         presenter.startAction();
+        getBaseActivity().showSnackbar(R.string.day_action_started);
     }
 
     @OnClick(R.id.day_action_cancel)
