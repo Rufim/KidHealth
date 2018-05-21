@@ -215,7 +215,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
 
         @Override
         public int getCount() {
-            return WeekDay.values().length;
+            return items.size() == 0 ? 0 : WeekDay.values().length  ;
         }
 
         @Override
