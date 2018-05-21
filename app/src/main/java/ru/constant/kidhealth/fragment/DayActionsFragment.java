@@ -69,7 +69,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
             SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
             if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
                 List<DayAction> actions = fragment.getDayActions(weekDay);
-                if (actions.size() > 0) {
+                if (actions != null && actions.size() > 0) {
                     addFinalItems(actions);
                 } else {
                     showEmptyView(R.string.day_action_no_actions);
@@ -101,7 +101,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
         if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
             isEnd = true;
             List<DayAction> actions = fragment.getDayActions(weekDay);
-            if (actions.size() == 0) {
+            if (actions == null || actions.size() == 0) {
                 showEmptyView(R.string.day_action_no_actions);
             }
             return new DayActionsAdapter(actions);

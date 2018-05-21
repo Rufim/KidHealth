@@ -204,7 +204,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     public boolean hasDayActions(WeekDay weekDay) {
-        return getAdapter().getItemTag(weekDay.ordinal()) != null;
+        return getAdapter() != null && getAdapter().getItemTag(weekDay.ordinal()) != null;
     }
 
     private class SchedulePagerAdapter extends FragmentPagerAdapter<List<DayAction>, DayActionsFragment> {
@@ -214,17 +214,17 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
         }
 
         @Override
-        public DayActionsFragment getNewItem(int position) {
-            if(position >= 0 && position < 7) {
-                DayActionsFragment fragment =  new DayActionsFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString(DayActionsFragment.WEEK_DAY, WeekDay.values()[position].name());
-                fragment.setArguments(bundle);
-                return fragment;
-            } else {
-                return new DayActionsFragment();
-            }
+        public int getCount() {
+            return WeekDay.values().length;
+        }
 
+        @Override
+        public DayActionsFragment getNewItem(int position) {
+            DayActionsFragment fragment =  new DayActionsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(DayActionsFragment.WEEK_DAY, WeekDay.values()[position].name());
+            fragment.setArguments(bundle);
+            return fragment;
         }
 
         @Nullable
