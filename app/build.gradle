@@ -118,6 +118,7 @@ dependencies {
     implementation ("com.evernote:android-job:1.2.5") {
         exclude group: 'com.android.support'
     }
+    implementation 'ru.egslava:MaskedEditText:1.0.5'
     implementation 'com.auth0.android:jwtdecode:1.1.1'
     implementation "org.greenrobot:eventbus:3.0.0"
     implementation "net.vrallev.android:cat:1.0.5"

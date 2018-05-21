@@ -17,6 +17,7 @@ import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 
+import org.greenrobot.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -29,7 +30,9 @@ import javax.inject.Inject;
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
+import ru.constant.kidhealth.domain.event.UpdateAction;
 import ru.constant.kidhealth.domain.models.DayAction;
+import ru.constant.kidhealth.fragment.SchedulePagerFragment;
 import ru.constant.kidhealth.service.DatabaseService;
 import ru.kazantsev.template.util.TextUtils;
 
@@ -73,6 +76,7 @@ public class DayActionJob extends Job {
                     if (!action.isNotified()) {
                         sendActionNotification(context, action);
                         databaseService.notifyDayAction(action);
+                        EventBus.getDefault().post(new UpdateAction(action));
                     }
                     next = databaseService.nextDayAction(DateTime.now());
                 } else {

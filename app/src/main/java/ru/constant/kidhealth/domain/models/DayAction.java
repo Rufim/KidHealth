@@ -137,7 +137,9 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         invalidateTime();
         if (!invalidated) return false;
         DateTime now = DateTime.now();
-        return isActive() && ((isStarted() && !isStopped() && !isFinished()) || (!isStopped() && !isFinished() && (now.isAfter(start) && now.isBefore(end))));
+        return isActive()
+                && ((isStarted() && !isStopped() && !isFinished()) || (!isStopped() && !isFinished() && (now.isAfter(start) && now.isBefore(end))));
+             //   && (getType().equals(DayActionType.TRAINING) || getType().equals(DayActionType.EDUCATION));
     }
 
     public Boolean isNotified() {

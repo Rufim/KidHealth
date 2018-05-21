@@ -12,6 +12,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import ru.constant.kidhealth.domain.models.Credentials;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.Token;
@@ -53,6 +54,6 @@ public interface RestApi {
     @POST("api/schedule/action/{actionId}/finish")
     Observable<DayAction> finishAction(@Path("actionId") String id);
 
-    @GET("api/schedule/action/{actionId}")
-    Observable<DayAction> getAction(@Path("actionId") String id);
+    @GET("api/schedule/action")
+    Observable<DayAction> getAction(@Query("actionId") String id);
 }

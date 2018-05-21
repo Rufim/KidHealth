@@ -3,7 +3,7 @@
 
     <string name="users">Пользователи</string>
 
-    <string name="login">ЛОГИН</string>
+    <string name="login">ТЕЛЕФОН</string>
     <string name="login_password">ПАРОЛЬ</string>
     <string name="login_enter">Войти</string>
     <string name="login_register">Зарегистрироваться</string>

@@ -135,6 +135,9 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
         @Override
         public void onBindHolder(ViewHolder holder, @Nullable DayAction item) {
+            GuiUtils.setText(holder, R.id.schedule_day_action_time, "--" + " - " + "--");
+            GuiUtils.setText(holder, R.id.schedule_day_action_title, "");
+            GuiUtils.setText(holder, R.id.schedule_day_action_comment, "");
             GuiUtils.setText(holder, R.id.schedule_day_action_time, fixTime(item.getStartTime()) + " - " + fixTime(item.getFinishTime()));
             GuiUtils.setText(holder, R.id.schedule_day_action_title, item.getTitle());
             GuiUtils.setText(holder, R.id.schedule_day_action_comment, item.getComment());

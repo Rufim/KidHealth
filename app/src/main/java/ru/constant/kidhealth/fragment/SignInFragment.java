@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import br.com.sapereaude.maskedEditText.MaskedEditText;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.constant.kidhealth.BuildConfig;
@@ -34,7 +35,7 @@ public class SignInFragment extends BaseFragment implements SignInView {
     @BindView(R.id.load_more)
     ProgressBar progressBar;
     @BindView(R.id.editTextLogin)
-    EditText editTextLogin;
+    MaskedEditText editTextLogin;
     @BindView(R.id.editTextPassword)
     EditText editTextPassword;
     @BindView(R.id.textViewBtnLogin)
@@ -45,6 +46,8 @@ public class SignInFragment extends BaseFragment implements SignInView {
     TextView textViewMessage;
     @BindView(R.id.reminderFullText)
     TextView reminderFullText;
+    @BindView(R.id.reminderLayout)
+    ViewGroup reminderLayout;
 
     @Override
     public void onStart() {
@@ -70,12 +73,19 @@ public class SignInFragment extends BaseFragment implements SignInView {
         }
         User user = AppUtils.getLastUser();
         if(user != null && TextUtils.notEmpty(user.getLogin())) {
-            editTextLogin.setText(user.getLogin());
+            if(user.getLogin().startsWith("+7")) {
+                editTextLogin.setText(user.getLogin().substring(2));
+            } else {
+                editTextLogin.setText(user.getLogin());
+            }
             editTextPassword.setText(user.getPassword());
         }
         ParentReminderJob.startSchedule();
         reminderFullText.setMovementMethod(LinkMovementMethod.getInstance());
         reminderFullText.setText(getString(R.string.reminder_full_text, RestService.BASE_URL));
+        if(AppUtils.isLoggedOnce()) {
+            reminderLayout.setVisibility(View.GONE);
+        }
         return rootView;
     }
 
@@ -83,7 +93,7 @@ public class SignInFragment extends BaseFragment implements SignInView {
     @OnClick(R.id.textViewBtnLogin)
     public void onClickLogin() {
         ((MainActivity)getActivity()).hideKeyboard();
-        signInPresenter.signIn(editTextLogin.getText().toString(), editTextPassword.getText().toString());
+        signInPresenter.signIn("+7" + editTextLogin.getRawText(), editTextPassword.getText().toString());
     }
 
     @OnClick(R.id.textViewBtnRegister)
@@ -119,7 +129,7 @@ public class SignInFragment extends BaseFragment implements SignInView {
 
     @Override
     public void hideError() {
-        textViewMessage.setVisibility(View.GONE);
+        textViewMessage.setVisibility(View.INVISIBLE);
     }
 
     @Override

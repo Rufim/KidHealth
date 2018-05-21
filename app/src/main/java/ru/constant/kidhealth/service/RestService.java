@@ -16,7 +16,7 @@ import ru.kazantsev.template.util.RxUtils;
 
 public class RestService {
 
-    //public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
+   // public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
     public static String BASE_URL = "http://192.168.101.148:8080";
     private RestApi restApi;
 
