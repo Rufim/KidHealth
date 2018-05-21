@@ -41,7 +41,7 @@ public class DayActionsPresenter extends DataSourcePresenter<DataSourceView<DayA
         setDataSource(new ObservableDataSource<DayAction>() {
             @Override
             public Observable<DayAction> getObservableItems(int skip, int size) throws Exception {
-                if(skip > 0)  {
+                if(skip > 0 || weekDay == null)  {
                     return Observable.just(new ArrayList<DayAction>()).flatMapIterable(e -> e);
                 } else {
                     return RestService.transformActions(restService.getWeekDay(weekDay.name()).map(result ->{

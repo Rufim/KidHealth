@@ -32,7 +32,7 @@ public class SignInPresenter extends BasePresenter<SignInView> {
 
         getViewState().hideFormError();
 
-        if (TextUtils.isEmpty(login)) {
+        if (TextUtils.isEmpty(login) || login.length() != 12) {
             getViewState().invalidLogin(R.string.login_error);
             return;
         }

@@ -37,7 +37,7 @@
     <string name="profile_birthdate">Дата Рождения</string>
     <string name="points_cups">%1$d очков, %2$d чашек</string>
     <string name="login_password_error">Нужен пароль</string>
-    <string name="login_error">Нужен логин</string>
+    <string name="login_error">Неправильный номер телефона</string>
     <string name="login_wrong">Неверный логин или пароль!</string>
     <string name="filter_hint">Фильтр..</string>
     <string name="error_network">Проврьте соединение с\nинтернетом...</string>

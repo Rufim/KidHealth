@@ -1,5 +1,6 @@
 package ru.constant.kidhealth.mvp.presenters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.annimon.stream.Stream;
@@ -91,13 +92,12 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                 initTime(dayAction);
             }
         } else {
-            if (!this.dayAction.equals(dayAction)) {
+            if (!this.dayAction.equals(dayAction) && dayAction != null) {
                 initTime(dayAction);
             } else if (!stopped) {
                 getViewState().updateTime(timeFormatter.print(new Duration(startTime, DateTime.now()).toPeriod()));
             }
         }
-        getViewState().cleanState();
         invalidateActions();
         return this;
     }
@@ -256,60 +256,62 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     public void invalidateActions() {
         getViewState().cleanState();
-        restService.getAction(dayAction.getId())
-                .subscribe(freshAction -> {
-                            dayAction = freshAction;
-                            dayAction.invalidateTime();
-                            if (dayAction.getActionStatuses().size() > 0) {
-                                LogStatus started = Stream.of(dayAction.getActionStatuses()).filter(stat -> stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
-                                if (started != null) {
-                                    startTime = started.getDateTime();
+        if(dayAction != null) {
+            restService.getAction(dayAction.getId())
+                    .subscribe(freshAction -> {
+                                dayAction = freshAction;
+                                dayAction.invalidateTime();
+                                if (dayAction.getActionStatuses().size() > 0) {
+                                    LogStatus started = Stream.of(dayAction.getActionStatuses()).filter(stat -> stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
+                                    if (started != null) {
+                                        startTime = started.getDateTime();
+                                    }
+                                } else {
+                                    startTime = dayAction.getStart();
                                 }
-                            } else {
-                                startTime = dayAction.getStart();
-                            }
-                            endTime = dayAction.getEnd();
-                            if (!dayAction.isActive()) {
-                                inactiveAction();
-                                return;
-                            }
-                            if (dayAction.isStopped()) {
-                                getViewState().onCanceled();
-                                return;
-                            }
+                                endTime = dayAction.getEnd();
+                                if (!dayAction.isActive()) {
+                                    inactiveAction();
+                                    return;
+                                }
+                                if (dayAction.isStopped()) {
+                                    getViewState().onCanceled();
+                                    return;
+                                }
 
-                            if (dayAction.isFinished()) {
-                                getViewState().onFinished();
-                                return;
-                            }
+                                if (dayAction.isFinished()) {
+                                    getViewState().onFinished();
+                                    return;
+                                }
 
-                            DateTime now = DateTime.now();
-                            if (now.isAfter(endTime)) {
-                                getViewState().updateTime(timeFormatter.print(new Duration(startTime, endTime).toPeriod()));
-                            } else {
-                                getViewState().switchStateButton(R.id.day_action_start, true);
-                                getViewState().switchStateButton(R.id.day_action_postpone, true);
-                                getViewState().switchStateButton(R.id.day_action_cancel, true);
-                            }
+                                DateTime now = DateTime.now();
+                                if (now.isAfter(endTime)) {
+                                    getViewState().updateTime(timeFormatter.print(new Duration(startTime, endTime).toPeriod()));
+                                } else {
+                                    getViewState().switchStateButton(R.id.day_action_start, true);
+                                    getViewState().switchStateButton(R.id.day_action_postpone, true);
+                                    getViewState().switchStateButton(R.id.day_action_cancel, true);
+                                }
 
-                            if (dayAction.isPostponed() || dayAction.isStarted() || dayAction.isStopped() ||
-                                    (POSTMPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
-                                getViewState().switchStateButton(R.id.day_action_postpone, false);
-                            }
-                            if (dayAction.isStarted() && !dayAction.isFinished() && !dayAction.getStopped()) {
-                                getViewState().switchStateButton(R.id.day_action_start, false);
-                                continueAction();
-                            }
-                        },
-                        error -> {
-                            getViewState().onActionFailure();
-                            if (!stopped) {
-                                continueAction();
-                            }
-                        });
-
+                                if (dayAction.isPostponed() || dayAction.isStarted() || dayAction.isStopped() ||
+                                        (POSTMPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
+                                    getViewState().switchStateButton(R.id.day_action_postpone, false);
+                                }
+                                if (dayAction.isStarted() && !dayAction.isFinished() && !dayAction.getStopped()) {
+                                    getViewState().switchStateButton(R.id.day_action_start, false);
+                                    continueAction();
+                                }
+                            },
+                            error -> {
+                                getViewState().onActionFailure();
+                                if (!stopped) {
+                                    continueAction();
+                                }
+                            });
+        }
     }
 
     private void inactiveAction() {

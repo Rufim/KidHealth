@@ -215,11 +215,16 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
 
         @Override
         public DayActionsFragment getNewItem(int position) {
-            DayActionsFragment fragment =  new DayActionsFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString(DayActionsFragment.WEEK_DAY, WeekDay.values()[position].name());
-            fragment.setArguments(bundle);
-            return fragment;
+            if(position >= 0 && position < 7) {
+                DayActionsFragment fragment =  new DayActionsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(DayActionsFragment.WEEK_DAY, WeekDay.values()[position].name());
+                fragment.setArguments(bundle);
+                return fragment;
+            } else {
+                return new DayActionsFragment();
+            }
+
         }
 
         @Nullable

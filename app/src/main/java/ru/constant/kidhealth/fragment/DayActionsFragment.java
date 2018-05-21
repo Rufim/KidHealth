@@ -55,6 +55,10 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
             adapter.notifyDataSetChanged();
             isEnd = true;
         }
+        if(weekDay == null) {
+            showEmptyView(R.string.error_network);
+            isEnd = true;
+        }
         return root;
     }
 
@@ -63,7 +67,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
         Cat.e(ex);
         if(ex instanceof SocketTimeoutException) {
             SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
-            if (fragment != null && fragment.hasDayActions(weekDay)) {
+            if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
                 List<DayAction> actions = fragment.getDayActions(weekDay);
                 if (actions.size() > 0) {
                     addFinalItems(actions);
@@ -94,7 +98,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     @Override
     protected ItemListAdapter<DayAction> newAdapter() {
         SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
-        if (fragment != null && fragment.hasDayActions(weekDay)) {
+        if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
             isEnd = true;
             List<DayAction> actions = fragment.getDayActions(weekDay);
             if (actions.size() == 0) {
