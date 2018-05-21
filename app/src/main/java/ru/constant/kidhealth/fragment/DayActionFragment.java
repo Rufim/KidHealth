@@ -169,7 +169,7 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_postpone, false);
         switchStateButton(R.id.day_action_cancel, false);
         switchStateButton(R.id.day_action_start, false);
-        dayActionStatus.setText(R.string.day_action_finished);
+        dayActionStatus.setText(R.string.day_action_may_finish);
         dayActionStatus.setVisibility(View.VISIBLE);
         dayActionStatus.setTextColor(getResources().getColor(R.color.md_green_400));
         switchStateButton(R.id.day_action_finish, true);

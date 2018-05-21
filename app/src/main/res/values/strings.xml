@@ -70,7 +70,8 @@
     <string name="day_action_postpone">Отложить на \n10 минут</string>
     <string name="day_action_finish">Завершить</string>
     <string name="day_action_started">Событие начато</string>
-    <string name="day_action_finished">Событие можно завершить</string>
+    <string name="day_action_may_finish">Событие можно завершить</string>
+    <string name="day_action_finished">Событие завершено</string>
     <string name="day_action_postponed">Событие отложено</string>
     <string name="day_action_canceled">Событие отменено</string>
     <string name="day_action_no_actions">В этот день ничего не запланированно.</string>
