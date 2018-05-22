@@ -40,7 +40,7 @@
     <string name="login_error">Неправильный номер телефона</string>
     <string name="login_wrong">Неверный логин или пароль!</string>
     <string name="filter_hint">Фильтр..</string>
-    <string name="error_network">Проврьте соединение с\nинтернетом...</string>
+    <string name="error_connection_failure">Нет соединения с сервером</string>
     <string name="edit_user_points">Текущие очки %d</string>
     <string name="edit_user_points_and_cups">Текущие очки %1$d и %2$d чашки коффе</string>
     <string name="profile">Редактирование</string>
@@ -79,4 +79,6 @@
     <string name="reminder_title">Напоминание!</string>
     <string name="reminder_text">Не забудьте показать приложение родителям</string>
     <string name="reminder_full_text">Напомоните своим родителям заригестрировать вас на сайте %s</string>
+    <string name="crash_title_text">Произошла ошибка</string>
+    <string name="crash_text">Послать отчет об ошибке?</string>
 </resources>

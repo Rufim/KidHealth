@@ -1,15 +1,24 @@
 package ru.constant.kidhealth;
 
 import android.app.Application;
+import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.evernote.android.job.JobManager;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+
+import io.fabric.sdk.android.Fabric;
 import ru.constant.kidhealth.dagger.AppComponent;
 import ru.constant.kidhealth.dagger.ContextModule;
 
@@ -21,6 +30,13 @@ import ru.constant.kidhealth.job.AppJobCreator;
 /**
  * Created by Rufim on 03.07.2015.
  */
+@ReportsCrashes(
+        mailTo = "dmitry.kazantsev@constant.obninsk.ru",
+        mode = ReportingInteractionMode.DIALOG,
+        resDialogTheme = R.style.AppTheme_Dialog,
+        resDialogTitle = R.string.crash_title_text,
+        resDialogText = R.string.crash_text
+)
 public class App extends Application {
 
     private static App singleton;
@@ -35,10 +51,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         singleton = this;
-//      Fabric.with(this, new Crashlytics.Builder()
-//                .core(new CrashlyticsCore.Builder()
-//                        .disabled(true)
-//                        .build()).build(), new Crashlytics());
 //      CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
 //              .setDefaultFontPath(Constants.Assets.ROBOTO_FONT_PATH)
 //              .setFontAttrId(R.attr.fontPath)
@@ -55,6 +67,13 @@ public class App extends Application {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        // The following line triggers the initialization of ACRA
+        ACRA.init(this);
     }
 
     public static AppComponent getAppComponent() {

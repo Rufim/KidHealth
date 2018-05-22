@@ -195,7 +195,7 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         switchStateButton(R.id.day_action_cancel, false);
         switchStateButton(R.id.day_action_start, false);
         switchStateButton(R.id.day_action_finish, false);
-        getBaseActivity().showSnackbar(R.string.error);
+        getBaseActivity().showSnackbar(R.string.error_connection_failure);
     }
 
     @OnClick(R.id.day_action_start)

@@ -21,6 +21,11 @@
         <item name="toolbarShadowDrawable">@drawable/shadow_light</item>
     </style>
 
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat">
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+    </style>
+
     <style name="edit_text.login">
         <item name="android:background">@drawable/login_edit</item>
         <item name="android:layout_height">56dp</item>

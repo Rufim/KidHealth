@@ -47,16 +47,17 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        isEnd = false;
         presenter.setWeekDay(weekDay = getWeekDay());
         pastVisibleItems = getArg(PAST_VISIBLE_ITEMS, 0);
         View root = super.onCreateView(inflater, container, savedInstanceState);
-        if (getParentFragment().getArguments().containsKey(getWeekDay().name())) {
+        if (getParentFragment().getArguments().containsKey(getWeekDay().name()) && adapter.getItems().size() > 0) {
             itemList.onRestoreInstanceState(getArguments().getParcelable(getWeekDay().name()));
             adapter.notifyDataSetChanged();
             isEnd = true;
         }
         if(weekDay == null) {
-            showEmptyView(R.string.error_network);
+            showEmptyView(R.string.error);
             isEnd = true;
         }
         return root;
@@ -75,7 +76,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
                     showEmptyView(R.string.day_action_no_actions);
                 }
             }
-            getBaseActivity().showSnackbar(R.string.error_network);
+            getBaseActivity().showSnackbar(R.string.error_connection_failure);
         }
     }
 
