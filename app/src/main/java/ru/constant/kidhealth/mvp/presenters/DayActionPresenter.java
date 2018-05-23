@@ -106,8 +106,10 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         stopped = false;
         this.dayAction = dayAction;
         dayAction.invalidateTime();
-        startTime = dayAction.getStart();
-        endTime = dayAction.getEnd();
+        if(dayAction.isValid()) {
+            startTime = dayAction.getStart();
+            endTime = dayAction.getEnd();
+        }
         onReset();
     }
 
@@ -259,7 +261,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     @SuppressLint("CheckResult")
     public void invalidateActions() {
         getViewState().cleanState();
-        if(dayAction != null) {
+        if(dayAction != null && TextUtils.notEmpty(dayAction.getId())) {
             restService.getAction(dayAction.getId())
                     .subscribe(freshAction -> {
                                 dayAction = freshAction;

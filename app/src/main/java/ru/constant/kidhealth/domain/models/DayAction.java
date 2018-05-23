@@ -31,8 +31,8 @@ import ru.kazantsev.template.domain.Validatable;
 import ru.kazantsev.template.util.TextUtils;
 
 @Data
-@EqualsAndHashCode(of = {"id", "startTime", "finishTime", "dayOfWeek"}, callSuper = false)
-@ToString(of = {"id", "startTime", "finishTime", "dayOfWeek"})
+@EqualsAndHashCode(of = {"id", "start", "end", "dayOfWeek"}, callSuper = false)
+@ToString(of = {"id", "start", "end", "dayOfWeek"})
 @Table(database = MyDatabase.class, allFields = true, updateConflict = ConflictAction.REPLACE, insertConflict = ConflictAction.REPLACE)
 public class DayAction extends BaseModel implements Parcelable, Serializable, Validatable {
 
@@ -85,6 +85,8 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         postponed = tmpPostponed == 0 ? null : tmpPostponed == 1;
         setStartDateTime(in.readString());
         setFinishDateTime(in.readString());
+        String day = in.readString();
+        if(day != null) dayOfWeek = WeekDay.valueOf(day);
     }
 
     public static final Creator<DayAction> CREATOR = new Creator<DayAction>() {
@@ -100,7 +102,7 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     };
 
     public void invalidateTime() {
-        if (start != null && end != null) {
+        if (start != null && end != null && getDayOfWeek() != null) {
             if(invalidated) return;
             start = start.withDate(LocalDate.now());
             start = start.withField(DateTimeFieldType.dayOfWeek(), getDayOfWeek().ordinal() + 1);
@@ -197,6 +199,7 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         dest.writeByte((byte) (postponed == null ? 0 : postponed ? 1 : 2));
         dest.writeString(getStartDateTime());
         dest.writeString(getFinishDateTime());
+        dest.writeString(dayOfWeek != null ? dayOfWeek.name() : null);
     }
 
 

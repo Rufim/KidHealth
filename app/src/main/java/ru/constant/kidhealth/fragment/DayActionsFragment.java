@@ -3,10 +3,13 @@ package ru.constant.kidhealth.fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.AnimationUtilsCompat;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -132,7 +135,24 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
         @Override
         public boolean onClick(View view, @Nullable DayAction item) {
             if (view.getId() == R.id.schedule_day_action_run && item.isRunning()) {
-                DayActionFragment.show((BaseFragment) getParentFragment(), item);
+                Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fab_anim);
+                view.startAnimation(animation);
+                animation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        DayActionFragment.show((BaseFragment) getParentFragment(), item);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
                 return true;
             }
             return false;
