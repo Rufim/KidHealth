@@ -50,8 +50,10 @@ public class ParentReminderJob extends Job {
             return Result.SUCCESS;
         }
         try {
-            sendActionNotification(context);
-            startSchedule();
+            if(!AppUtils.isLoggedOnce()) {
+                sendActionNotification(context);
+                startSchedule();
+            }
         } catch (Exception e) {
             Log.e(TAG, "Unknown exception", e);
             return Result.FAILURE;

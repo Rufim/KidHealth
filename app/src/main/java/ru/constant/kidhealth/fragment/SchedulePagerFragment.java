@@ -99,6 +99,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        autoLoadMore = false;
         currentItem = DateTime.now().getDayOfWeek() - 1;
         EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);

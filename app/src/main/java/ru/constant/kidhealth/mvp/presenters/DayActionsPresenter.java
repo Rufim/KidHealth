@@ -22,10 +22,11 @@ import ru.constant.kidhealth.service.DatabaseService;
 import ru.kazantsev.template.lister.ObservableDataSource;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceView;
+import ru.kazantsev.template.mvp.view.DataSourceViewNoPersist;
 import ru.kazantsev.template.net.HTTPExecutor;
 
 @InjectViewState
-public class DayActionsPresenter extends DataSourcePresenter<DataSourceView<DayAction>, DayAction> {
+public class DayActionsPresenter extends DataSourcePresenter<DataSourceViewNoPersist<DayAction>, DayAction> {
 
     @Inject public RestService restService;
     @Inject DatabaseService databaseService;
@@ -42,7 +43,7 @@ public class DayActionsPresenter extends DataSourcePresenter<DataSourceView<DayA
             @Override
             public Observable<DayAction> getObservableItems(int skip, int size) throws Exception {
                 if(skip > 0 || weekDay == null)  {
-                    return Observable.just(new ArrayList<DayAction>()).flatMapIterable(e -> e);
+                    return Observable.empty();
                 } else {
                     return RestService.transformActions(restService.getWeekDay(weekDay.name()).map(result ->{
                         try {

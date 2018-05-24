@@ -3,6 +3,7 @@ package ru.constant.kidhealth.fragment;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.rilixtech.CountryCodePicker;
 
 import br.com.sapereaude.maskedEditText.MaskedEditText;
 import butterknife.BindView;
@@ -36,6 +38,8 @@ public class SignInFragment extends BaseFragment implements SignInView {
     ProgressBar progressBar;
     @BindView(R.id.editTextLogin)
     MaskedEditText editTextLogin;
+    @BindView(R.id.countryCodePicker)
+    CountryCodePicker countryCodePicker;
     @BindView(R.id.editTextPassword)
     EditText editTextPassword;
     @BindView(R.id.textViewBtnLogin)
@@ -61,6 +65,15 @@ public class SignInFragment extends BaseFragment implements SignInView {
         super.onStop();
     }
 
+    private Pair<Integer, String> splitPhone(String fullNumber, Integer defaultCode) {
+        if(fullNumber.startsWith("+")) {
+            fullNumber =  fullNumber.substring(1);
+        }
+        int phoneIndex = fullNumber.length() - 10;
+        String number = fullNumber.substring(phoneIndex);
+        String code = fullNumber.substring(0, phoneIndex);
+        return new Pair<>(TextUtils.extractInt(code, defaultCode), number);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,12 +85,15 @@ public class SignInFragment extends BaseFragment implements SignInView {
           //  editTextPassword.setText(BuildConfig.PASSWORD);
         }
         User user = AppUtils.getLastUser();
+        countryCodePicker.setTextColor(getResources().getColor(R.color.white));
         if(user != null && TextUtils.notEmpty(user.getLogin())) {
-            if(user.getLogin().startsWith("+7")) {
-                editTextLogin.setText(user.getLogin().substring(2));
+            Pair<Integer, String> codePone = splitPhone(user.getLogin(), 7);
+            if(codePone.first == 7) {
+                countryCodePicker.setCountryForNameCode("RU");
             } else {
-                editTextLogin.setText(user.getLogin());
+                countryCodePicker.setCountryForPhoneCode(codePone.first);
             }
+            editTextLogin.setText(codePone.second);
             editTextPassword.setText(user.getPassword());
         }
         ParentReminderJob.startSchedule();
@@ -93,7 +109,7 @@ public class SignInFragment extends BaseFragment implements SignInView {
     @OnClick(R.id.textViewBtnLogin)
     public void onClickLogin() {
         ((MainActivity)getActivity()).hideKeyboard();
-        signInPresenter.signIn("+7" + editTextLogin.getRawText(), editTextPassword.getText().toString());
+        signInPresenter.signIn(countryCodePicker.getSelectedCountryCodeWithPlus() + editTextLogin.getRawText(), editTextPassword.getText().toString());
     }
 
     @OnClick(R.id.textViewBtnRegister)

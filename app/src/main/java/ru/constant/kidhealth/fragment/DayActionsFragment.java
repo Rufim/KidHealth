@@ -3,8 +3,6 @@ package ru.constant.kidhealth.fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.graphics.drawable.AnimationUtilsCompat;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +14,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import net.vrallev.android.cat.Cat;
 
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.constant.kidhealth.R;
@@ -27,14 +26,13 @@ import ru.kazantsev.template.adapter.LazyItemListAdapter;
 import ru.kazantsev.template.fragments.BaseFragment;
 import ru.kazantsev.template.fragments.mvp.MvpListFragment;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
-import ru.kazantsev.template.mvp.view.DataSourceView;
-import ru.kazantsev.template.util.AndroidSystemUtils;
+import ru.kazantsev.template.mvp.view.DataSourceViewNoPersist;
 import ru.kazantsev.template.util.GuiUtils;
 
 import static ru.constant.kidhealth.utils.AppUtils.fixTime;
 
 
-public class DayActionsFragment extends MvpListFragment<DayAction> implements DataSourceView<DayAction> {
+public class DayActionsFragment extends MvpListFragment<DayAction> implements DataSourceViewNoPersist<DayAction> {
 
     @InjectPresenter
     DayActionsPresenter presenter;
@@ -44,24 +42,28 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     private WeekDay weekDay;
 
     public DayActionsFragment() {
+        autoLoadMore = false;
         retainInstance = false;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        isEnd = false;
         presenter.setWeekDay(weekDay = getWeekDay());
         pastVisibleItems = getArg(PAST_VISIBLE_ITEMS, 0);
         View root = super.onCreateView(inflater, container, savedInstanceState);
-        if (getParentFragment().getArguments().containsKey(getWeekDay().name()) && adapter.getItems().size() > 0) {
-            itemList.onRestoreInstanceState(getArguments().getParcelable(getWeekDay().name()));
-            adapter.notifyDataSetChanged();
-            isEnd = true;
-        }
         if(weekDay == null) {
             showEmptyView(R.string.error);
-            isEnd = true;
+            finishLoad();
+        } else if (getParentFragment().getArguments().containsKey(getWeekDay().name())) {
+            itemList.onRestoreInstanceState(getArguments().getParcelable(getWeekDay().name()));
+            if(adapter.getItems().isEmpty()) {
+                addFinalItems(getCachedActions());
+            }
+            finishLoad();
+        }
+        if(adapter != null) {
+            adapter.notifyDataSetChanged();
         }
         return root;
     }
@@ -70,18 +72,24 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     public void onDataTaskException(Throwable ex) {
         Cat.e(ex);
         if(ex instanceof SocketTimeoutException) {
-            SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
-            if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
-                List<DayAction> actions = fragment.getDayActions(weekDay);
-                if (actions != null && actions.size() > 0) {
-                    addFinalItems(actions);
-                } else {
-                    showEmptyView(R.string.day_action_no_actions);
-                }
+            List<DayAction> actions = getCachedActions();
+            if (actions != null && actions.size() > 0) {
+                addFinalItems(actions);
+            } else {
+                showEmptyView(R.string.day_action_no_actions);
             }
             getBaseActivity().showSnackbar(R.string.error_connection_failure);
         }
     }
+
+    private List<DayAction> getCachedActions() {
+        SchedulePagerFragment fragment = (SchedulePagerFragment) getParentFragment();
+        if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
+            return  fragment.getDayActions(weekDay);
+        }
+        return new ArrayList<>(0);
+    }
+
 
     private WeekDay getWeekDay() {
         if (weekDay != null) return weekDay;
@@ -95,29 +103,31 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     }
 
     @Override
-    public DataSourcePresenter<DataSourceView<DayAction>, DayAction> getPresenter() {
+    public DataSourcePresenter<DataSourceViewNoPersist<DayAction>, DayAction> getPresenter() {
         return presenter;
     }
 
     @Override
     protected ItemListAdapter<DayAction> newAdapter() {
-        SchedulePagerFragment fragment = (SchedulePagerFragment)getParentFragment();
-        if (fragment != null && weekDay != null && fragment.hasDayActions(weekDay)) {
-            isEnd = true;
-            List<DayAction> actions = fragment.getDayActions(weekDay);
-            if (actions == null || actions.size() == 0) {
-                showEmptyView(R.string.day_action_no_actions);
-            }
-            return new DayActionsAdapter(actions);
+        List<DayAction> actions = getCachedActions();
+        if (actions == null || actions.size() == 0) {
+            showEmptyView(R.string.day_action_no_actions);
         } else {
-            return new DayActionsAdapter();
+            finishLoad();
         }
+        return new DayActionsAdapter(actions);
+    }
+
+    private void finishLoad() {
+        isEnd = true;
+        stopLoading();
     }
 
     @Override
     public void finishLoad(List<DayAction> items, AsyncTask onElementsLoadedTask, Object[] loadedTaskParams) {
+        isEnd = true;
         super.finishLoad(items, onElementsLoadedTask, loadedTaskParams);
-        ((SchedulePagerFragment)getParentFragment()).updateDayActions(weekDay, items);
+        ((SchedulePagerFragment) getParentFragment()).updateDayActions(weekDay, items);
     }
 
     public class DayActionsAdapter extends LazyItemListAdapter<DayAction> {
