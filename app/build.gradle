@@ -31,9 +31,8 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        addConstant("TOKEN_SIGNING_KEY", "xm8EV6Hy5RMFK4EEACIDAwQus")
     }
 
     buildTypes {
@@ -59,17 +58,17 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("kidhealth.key.jks")
-            storePassword "123qweasd"
+            storeFile file("kidhealth.jks")
+            storePassword "1qa2ws3ed"
             keyAlias "key"
-            keyPassword "123qweasd"
+            keyPassword "1qa2ws3ed"
         }
 
         debug {
-            storeFile file("kidhealth.key.jks")
-            storePassword "123qweasd"
+            storeFile file("kidhealth.jks")
+            storePassword "1qa2ws3ed"
             keyAlias "key"
-            keyPassword "123qweasd"
+            keyPassword "1qa2ws3ed"
         }
     }
 
