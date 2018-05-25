@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/common_web"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_web"
+        android:title="@string/common_logout" />
+    <item
         android:id="@+id/common_logout"
         app:showAsAction="always"
         android:icon="@drawable/ic_exit"

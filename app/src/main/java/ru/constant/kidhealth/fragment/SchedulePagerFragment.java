@@ -106,25 +106,6 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.common_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.common_logout:
-                if(isAdded()) {
-                    AppUtils.clearToken();
-                    DayActionJob.stop(getContext());
-                    getBaseActivity().replaceFragment(SignInFragment.class);
-                    return true;
-                }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tabStripMode = false;
         View root = super.onCreateView(inflater, container, savedInstanceState);

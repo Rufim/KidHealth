@@ -3,11 +3,17 @@ package ru.constant.kidhealth.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.method.LinkMovementMethod;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -26,6 +32,7 @@ import ru.constant.kidhealth.fragment.SignInFragment;
 import ru.constant.kidhealth.job.DayActionJob;
 import ru.constant.kidhealth.job.ParentReminderJob;
 import ru.constant.kidhealth.service.DatabaseService;
+import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.utils.AppUtils;
 import ru.kazantsev.template.activity.BaseActivity;
 import ru.kazantsev.template.domain.event.FragmentAttachedEvent;
@@ -54,18 +61,45 @@ public class MainActivity extends BaseActivity {
         toolbarClassic = true;
         super.onCreate(savedInstanceState);
         App.getAppComponent().inject(this);
+        setTitle("");
+        View logo = GuiUtils.inflate(this, R.layout.logo);
+        getToolbar().addView(logo);
         // Восстанавливаем фрагмент при смене ориентации экрана.
         Fragment sectionFragment = getLastFragment(savedInstanceState);
         if (sectionFragment != null) {
             restoreFragment(sectionFragment);
         } else {
             Token token = AppUtils.getToken();
-            if(!token.isValid()) {
+            if (!token.isValid()) {
                 replaceFragment(SignInFragment.class);
             } else {
                 replaceFragment(SchedulePagerFragment.class);
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.common_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.common_logout:
+                AppUtils.clearToken();
+                DayActionJob.stop(this);
+                replaceFragment(SignInFragment.class);
+                return true;
+            case R.id.common_web:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(RestService.BASE_URL));
+                intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -82,8 +116,8 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void handleIntent(Intent intent) {
-        if(intent.getAction() != null) {
-            if(intent.getAction().startsWith(DayActionJob.NOTIFICATION_ACTION_NAME)) {
+        if (intent.getAction() != null) {
+            if (intent.getAction().startsWith(DayActionJob.NOTIFICATION_ACTION_NAME)) {
                 if (intent.getExtras() != null && intent.getExtras().containsKey(DayActionJob.DAY_ACTION_ID)) {
                     DayAction action = databaseService.getDayAction(intent.getExtras().getString(DayActionJob.DAY_ACTION_ID));
                     if (action != null) {
@@ -102,7 +136,7 @@ public class MainActivity extends BaseActivity {
                     }
                 }
             }
-            if(intent.getAction().startsWith(ParentReminderJob.NOTIFICATION_ACTION_NAME)) {
+            if (intent.getAction().startsWith(ParentReminderJob.NOTIFICATION_ACTION_NAME)) {
                 replaceFragment(SignInFragment.class);
             }
         }
