@@ -73,6 +73,8 @@
                         android:hint="0000000000"
                         android:inputType="phone"
                         android:padding="0dp"
+                        android:nextFocusDown="@id/editTextPassword"
+                        android:nextFocusForward="@id/editTextPassword"
                         android:paddingRight="@dimen/spacing_large"
                         android:paddingBottom="@dimen/spacing_large"
                         android:paddingTop="@dimen/spacing_large"
@@ -89,6 +91,7 @@
                     android:layout_width="match_parent"
                     android:ems="10"
                     android:hint="@string/login_password"
+                    android:imeOptions="actionDone"
                     android:inputType="textPassword" />
             </LinearLayout>
 
@@ -131,10 +134,9 @@
                             android:layout_height="wrap_content">
                         <TextView
                             android:id="@+id/reminderFullText"
-                            android:text="@string/reminder_full_text"
+                            android:text="@string/reminder_not_logged_text"
                             android:textColor="@color/white"
                             android:gravity="center"
-                            android:autoLink="web"
                             android:textSize="12sp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />

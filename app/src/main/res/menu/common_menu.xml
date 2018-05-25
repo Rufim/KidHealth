@@ -4,7 +4,7 @@
     <item
         android:id="@+id/common_web"
         app:showAsAction="always"
-        android:icon="@drawable/ic_web"
+        android:icon="@drawable/ic_person"
         android:title="@string/common_logout" />
     <item
         android:id="@+id/common_logout"

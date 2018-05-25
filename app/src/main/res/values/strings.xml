@@ -78,7 +78,8 @@
     <string name="common_logout">Выход</string>
     <string name="reminder_title">Напоминание!</string>
     <string name="reminder_text">Не забудьте показать приложение родителям</string>
-    <string name="reminder_full_text">Напомоните своим родителям заригестрировать вас на сайте %s</string>
+    <string formatted="false" name="reminder_not_logged_text">Напомоните своим родителям заригестрировать вас <![CDATA[<a href="%s"> на сайте </a>]]></string>
+    <string formatted="false" name="reminder_logged_text">Просмотреть профиль и редактировать расписание возможно <![CDATA[<a href="%s"> на сайте </a>]]></string>
     <string name="crash_title_text">Произошла ошибка</string>
     <string name="crash_text">Послать отчет об ошибке?</string>
 </resources>

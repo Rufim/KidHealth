@@ -1,12 +1,15 @@
 package ru.constant.kidhealth.fragment;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -98,10 +101,26 @@ public class SignInFragment extends BaseFragment implements SignInView {
         }
         ParentReminderJob.startSchedule();
         reminderFullText.setMovementMethod(LinkMovementMethod.getInstance());
-        reminderFullText.setText(getString(R.string.reminder_full_text, RestService.BASE_URL));
         if(AppUtils.isLoggedOnce()) {
-            reminderLayout.setVisibility(View.GONE);
+            reminderFullText.setText(Html.fromHtml(getString(R.string.reminder_logged_text, RestService.BASE_URL)));
+        } else {
+            reminderFullText.setText(Html.fromHtml(getString(R.string.reminder_not_logged_text, RestService.BASE_URL)));
         }
+        editTextLogin.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                editTextPassword.requestFocus();
+                editTextPassword.setSelection(editTextPassword.getText().length());
+                return true;
+            }
+            return false;
+        });
+        editTextPassword.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                textViewBtnLogin.performClick();
+                return true;
+            }
+            return false;
+        });
         return rootView;
     }
 
