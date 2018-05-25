@@ -118,12 +118,6 @@ public class SignInFragment extends BaseFragment implements SignInView {
         ///RegistrationFragment.show(this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
     public static SignInFragment show (BaseFragment fragment) {
         return show(fragment, SignInFragment.class);
     }

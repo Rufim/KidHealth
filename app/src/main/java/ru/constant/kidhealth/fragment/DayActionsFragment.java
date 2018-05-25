@@ -42,7 +42,8 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     private WeekDay weekDay;
 
     public DayActionsFragment() {
-        autoLoadMore = false;
+        autoLoadMoreOnScroll = false;
+        autoLoadMoreOnFinish = false;
         retainInstance = false;
     }
 
@@ -74,7 +75,9 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
         if(ex instanceof SocketTimeoutException) {
             List<DayAction> actions = getCachedActions();
             if (actions != null && actions.size() > 0) {
-                addFinalItems(actions);
+                if(adapter.getItems().isEmpty()) {
+                    addFinalItems(actions);
+                }
             } else {
                 showEmptyView(R.string.day_action_no_actions);
             }
@@ -125,7 +128,6 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
     @Override
     public void finishLoad(List<DayAction> items, AsyncTask onElementsLoadedTask, Object[] loadedTaskParams) {
-        isEnd = true;
         super.finishLoad(items, onElementsLoadedTask, loadedTaskParams);
         ((SchedulePagerFragment) getParentFragment()).updateDayActions(weekDay, items);
     }
