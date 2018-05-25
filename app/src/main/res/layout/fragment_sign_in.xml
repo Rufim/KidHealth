@@ -15,7 +15,7 @@
         android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="260dp"
+            android:layout_width="266dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/spacing_huge"
@@ -68,13 +68,10 @@
                         style="@style/edit_text.login"
                         android:background="@color/transparent"
                         android:layout_marginBottom="0dp"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:ems="10"
                         android:hint="0000000000"
                         android:inputType="phone"
-                        android:padding="0dp"
-                        android:nextFocusDown="@id/editTextPassword"
-                        android:nextFocusForward="@id/editTextPassword"
                         android:paddingRight="@dimen/spacing_large"
                         android:paddingBottom="@dimen/spacing_large"
                         android:paddingTop="@dimen/spacing_large"
@@ -91,6 +88,7 @@
                     android:layout_width="match_parent"
                     android:ems="10"
                     android:hint="@string/login_password"
+                    android:padding="@dimen/spacing_large"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword" />
             </LinearLayout>

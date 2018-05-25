@@ -108,8 +108,13 @@ public class SignInFragment extends BaseFragment implements SignInView {
         }
         editTextLogin.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                editTextPassword.requestFocus();
-                editTextPassword.setSelection(editTextPassword.getText().length());
+                if(editTextLogin.getRawText().length() < 10) {
+                    invalidLogin(R.string.login_error);
+                } else {
+                    hideFormError();
+                    editTextPassword.requestFocus();
+                    editTextPassword.setSelection(editTextPassword.getText().length());
+                }
                 return true;
             }
             return false;
