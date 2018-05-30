@@ -1,8 +1,18 @@
 package ru.constant.kidhealth.fragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.style.AlignmentSpan;
+import android.text.style.CharacterStyle;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +23,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import net.vrallev.android.cat.Cat;
 
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +39,7 @@ import ru.kazantsev.template.fragments.mvp.MvpListFragment;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceViewNoPersist;
 import ru.kazantsev.template.util.GuiUtils;
+import ru.kazantsev.template.util.VerticalAlignmentSpan;
 
 import static ru.constant.kidhealth.utils.AppUtils.fixTime;
 
@@ -72,16 +84,16 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
     @Override
     public void onDataTaskException(Throwable ex) {
         Cat.e(ex);
-        if(ex instanceof SocketTimeoutException) {
+        stopLoading();
+        if(ex instanceof SocketTimeoutException || ex instanceof ConnectException) {
             List<DayAction> actions = getCachedActions();
             if (actions != null && actions.size() > 0) {
                 if(adapter.getItems().isEmpty()) {
                     addFinalItems(actions);
                 }
             } else {
-                showEmptyView(R.string.day_action_no_actions);
+                showEmptyView(R.string.error_connection_failure);
             }
-            getBaseActivity().showSnackbar(R.string.error_connection_failure);
         }
     }
 
@@ -146,6 +158,14 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
         @Override
         public boolean onClick(View view, @Nullable DayAction item) {
+            if (view.getId() == R.id.schedule_day_action_time_next && item.getNextDayAction() != null) {
+                ((SchedulePagerFragment)getParentFragment()).setPage(item.getNextDayAction().getDayOfWeek());
+                return true;
+            }
+            if(view.getId() == R.id.schedule_day_action_time_previous && item.getPrevDayAction() != null) {
+                ((SchedulePagerFragment)getParentFragment()).setPage(item.getPrevDayAction().getDayOfWeek());
+                return false;
+            }
             if (view.getId() == R.id.schedule_day_action_run && item.isRunning()) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fab_anim);
                 view.startAnimation(animation);
@@ -172,13 +192,35 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
         @Override
         public void onBindHolder(ViewHolder holder, @Nullable DayAction item) {
+            ViewGroup root =(ViewGroup) holder.getItemView();
             GuiUtils.setText(holder, R.id.schedule_day_action_time, "--" + " - " + "--");
             GuiUtils.setText(holder, R.id.schedule_day_action_title, "");
             GuiUtils.setText(holder, R.id.schedule_day_action_comment, "");
-            GuiUtils.setText(holder, R.id.schedule_day_action_time, fixTime(item.getStartTime()) + " - " + fixTime(item.getFinishTime()));
+            GuiUtils.setVisibility(View.GONE, root, R.id.schedule_day_action_time_next);
+            GuiUtils.setVisibility(View.GONE, root, R.id.schedule_day_action_time_previous);
+            SpannableStringBuilder time = new SpannableStringBuilder();
+            if(item.getPrevDayAction()  == null) {
+                time.append(fixTime(item.getStartTime()));
+            } else {
+               // GuiUtils.appendSpannableText(time, "(", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
+                time.append(fixTime(item.getPrevDayAction().getStartTime()));
+                GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_time_previous);
+                GuiUtils.appendSpannableText(time," " + getString(R.string.yesterday), new RelativeSizeSpan(0.3f), new VerticalAlignmentSpan(1.5));
+              //  GuiUtils.appendSpannableText(time, ")", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
+            }
+            time.append(" - ");
+            if(item.getNextDayAction()  == null) {
+                time.append(fixTime(item.getFinishTime()));
+            } else {
+              //  GuiUtils.appendSpannableText(time, "(", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
+                GuiUtils.appendSpannableText(time, getString(R.string.tomorrow) + " ", new RelativeSizeSpan(0.3f), new VerticalAlignmentSpan(1.5));
+                time.append(fixTime(item.getNextDayAction().getFinishTime()));
+                GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_time_next);
+              //  GuiUtils.appendSpannableText(time, ")", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
+            }
+            GuiUtils.setText(holder, R.id.schedule_day_action_time, time);
             GuiUtils.setText(holder, R.id.schedule_day_action_title, item.getTitle());
             GuiUtils.setText(holder, R.id.schedule_day_action_comment, item.getComment());
-            ViewGroup root =(ViewGroup) holder.getItemView();
             if (item.isRunning()) {
                 GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_run);
             } else {

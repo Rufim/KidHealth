@@ -62,7 +62,7 @@ public class RetrofitModule {
 
 		return new OkHttpClient.Builder()
 				.connectTimeout(3, TimeUnit.SECONDS)
-				.readTimeout(3, TimeUnit.SECONDS)
+				.readTimeout(20, TimeUnit.SECONDS)
 				.addNetworkInterceptor(interceptor)
 				.authenticator(new RefreshTokenAuthenticator(context))
 				.addInterceptor(new AddTokenInterceptor(context))

@@ -87,6 +87,7 @@ public class DatabaseService {
                 .from(DayAction.class)
                 .where(DayAction_Table.start.greaterThan(now))
                 .and(DayAction_Table.active.eq(true))
+                .and(DayAction_Table.prevDayAction_id.isNull())
                 .and(OperatorGroup.clause().or(DayAction_Table.finished.eq(false)).or(DayAction_Table.finished.isNull()))
                 .and(OperatorGroup.clause().or(DayAction_Table.started.eq(false)).or(DayAction_Table.started.isNull()))
                 //.and(OperatorGroup.clause().or(DayAction_Table.type.eq(DayActionType.EDUCATION)).or(DayAction_Table.type.eq(DayActionType.TRAINING)))

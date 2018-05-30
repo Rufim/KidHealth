@@ -67,7 +67,7 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         if (dayAction == null) {
             dayAction = getArg(DAY_ARG, null);
         }
-        return dayAction.toString();
+        return "dayAction_" + (dayAction == null ? "null" : dayAction.getId());
     }
 
     @Override
@@ -191,10 +191,10 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
 
     @Override
     public void onActionFailure() {
-        switchStateButton(R.id.day_action_postpone, false);
-        switchStateButton(R.id.day_action_cancel, false);
-        switchStateButton(R.id.day_action_start, false);
-        switchStateButton(R.id.day_action_finish, false);
+        //switchStateButton(R.id.day_action_postpone, false);
+        //switchStateButton(R.id.day_action_cancel, false);
+        //switchStateButton(R.id.day_action_start, false);
+        //switchStateButton(R.id.day_action_finish, false);
         getBaseActivity().showSnackbar(R.string.error_connection_failure);
     }
 

@@ -4,9 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.annimon.stream.Stream;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ColumnIgnore;
 import com.raizlabs.android.dbflow.annotation.ConflictAction;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -20,6 +23,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -36,8 +41,8 @@ import ru.kazantsev.template.util.TextUtils;
 @Table(database = MyDatabase.class, allFields = true, updateConflict = ConflictAction.REPLACE, insertConflict = ConflictAction.REPLACE)
 public class DayAction extends BaseModel implements Parcelable, Serializable, Validatable {
 
-    private static DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
-    private static DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    static DateTimeFormatter TIME_FORMAT = DateTimeFormat.forPattern("HH:mm:ss");
+    static DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
 
     @PrimaryKey
     String id;
@@ -53,6 +58,10 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     DateTime end;
     String duration;
     String comment;
+    @ForeignKey(stubbedRelationship = true)
+    DayAction nextDayAction;
+    @ForeignKey(stubbedRelationship = true)
+    DayAction prevDayAction;
     @ColumnIgnore
     SortedSet<LogStatus> actionStatuses = new TreeSet<>();
     Boolean notified = false;
@@ -87,6 +96,9 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         setFinishDateTime(in.readString());
         String day = in.readString();
         if(day != null) dayOfWeek = WeekDay.valueOf(day);
+        ArrayList<LogStatus> logStatuses = new ArrayList<>();
+        in.readTypedList(logStatuses, LogStatus.CREATOR);
+        setActionStatuses(new TreeSet<>(logStatuses));
     }
 
     public static final Creator<DayAction> CREATOR = new Creator<DayAction>() {
@@ -100,6 +112,24 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
             return new DayAction[size];
         }
     };
+
+    public DayAction getNextDayAction() {
+        if(nextDayAction ==  null)  {
+            return null;
+        } else {
+            nextDayAction.load();
+            return nextDayAction;
+        }
+    }
+
+    public DayAction getPrevDayAction() {
+        if(prevDayAction ==  null)  {
+            return null;
+        } else {
+            prevDayAction.load();
+            return prevDayAction;
+        }
+    }
 
     public void invalidateTime() {
         if (start != null && end != null && getDayOfWeek() != null) {
@@ -129,16 +159,50 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
                 }
                 setPostponed(Stream.of(getActionStatuses()).anyMatch(stat -> stat.getStatus().equals(ActionStatus.POSTPONED)));
             }
+            if(prevDayAction != null) {
+                notified = true;
+            }
+            getPrevDayAction();
+            getNextDayAction();
             invalidated = true;
         } else {
             invalidated = false;
         }
     }
 
+    public DayAction getLastAction() {
+        DayAction prevAction = getNextDayAction();
+        if(prevAction == null) return this;
+        DayAction result = prevAction;
+        while (prevAction != null) {
+            result = prevAction;
+            result.setActionStatuses(getActionStatuses());
+            result.invalidateTime();
+            prevAction = prevAction.getNextDayAction();
+        }
+        return result;
+    }
+
+
+    public DayAction getFirstAction() {
+        DayAction nextAction = getPrevDayAction();
+        if(nextAction == null) return this;
+        DayAction result = nextAction;
+        while (nextAction != null) {
+            result = nextAction;
+            result.setActionStatuses(getActionStatuses());
+            result.invalidateTime();
+            nextAction = nextAction.getPrevDayAction();
+        }
+        return result;
+    }
+
     public boolean isRunning() {
         invalidateTime();
         if (!invalidated) return false;
         DateTime now = DateTime.now();
+        DateTime start = getFirstAction().getStart();
+        DateTime end = getLastAction().getEnd();
         return isActive()
                 && ((isStarted() && !isStopped() && !isFinished()) || (!isStopped() && !isFinished() && (now.isAfter(start) && now.isBefore(end))));
              //   && (getType().equals(DayActionType.TRAINING) || getType().equals(DayActionType.EDUCATION));
@@ -200,33 +264,34 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         dest.writeString(getStartDateTime());
         dest.writeString(getFinishDateTime());
         dest.writeString(dayOfWeek != null ? dayOfWeek.name() : null);
+        dest.writeTypedList(new ArrayList<>(actionStatuses));
     }
 
 
     public String getStartTime() {
-        return timeFormat.print(start);
+        return TIME_FORMAT.print(start);
     }
 
     public String getFinishTime() {
-        return timeFormat.print(end);
+        return TIME_FORMAT.print(end);
     }
 
 
     public String getStartDateTime() {
-        return dateTimeFormatter.print(start);
+        return DATE_TIME_FORMATTER.print(start);
     }
 
     public String getFinishDateTime() {
-        return dateTimeFormatter.print(end);
+        return DATE_TIME_FORMATTER.print(end);
     }
 
 
     public void setStartDateTime(String startTime) {
-        start = dateTimeFormatter.parseDateTime(startTime);
+        start = DATE_TIME_FORMATTER.parseDateTime(startTime);
     }
 
 
     public void setFinishDateTime(String finishTime) {
-        end =dateTimeFormatter.parseDateTime(finishTime);
+        end = DATE_TIME_FORMATTER.parseDateTime(finishTime);
     }
 }

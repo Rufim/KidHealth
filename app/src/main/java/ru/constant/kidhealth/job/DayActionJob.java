@@ -117,16 +117,16 @@ public class DayActionJob extends Job {
                     .build()
                     .schedule();
         } else {
-            Log.e(TAG, "action not valid or null " + dayAction);
+            Log.e(TAG, "action not valid or null ");
         }
     }
 
     public static void startSchedule(DayAction dayAction) {
-        if (dayAction != null && !dayAction.isNotified()) {
+        if (dayAction != null) {
             startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart()).getMillis());
             //startSchedule(dayAction, 60000);
         } else {
-            Log.e(TAG, "action not valid or null " + dayAction);
+            Log.e(TAG, "action not valid or null ");
         }
     }
 
@@ -157,7 +157,8 @@ public class DayActionJob extends Job {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
         notificationBuilder.setSmallIcon(R.drawable.running_rabbit_96);
-        notificationBuilder.setColor(0x2ECC71);
+
+
         //notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.running_rabbit_96));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationBuilder.setChannelId(getNotificationChannel(context).getId());

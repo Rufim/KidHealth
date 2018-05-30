@@ -6,11 +6,13 @@ import android.content.Context;
 import com.annimon.stream.Stream;
 import com.arellomobile.mvp.InjectViewState;
 
+import net.vrallev.android.cat.Cat;
+
 import org.greenrobot.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -39,12 +41,12 @@ import ru.kazantsev.template.util.TextUtils;
 @InjectViewState
 public class DayActionPresenter extends BasePresenter<DayActionView> {
 
-    private static final String PASSED_TIME = "passedTime";
     private static final String WEEK_DAY = "weekDay";
     private static final String FINISH_TIME = "finish_time";
     private static final String START_TIME = "startTime";
+    private static final String START_ACTION = "startAction";
     private static final String LAST_TIME_ID = "id";
-    private static final int POSTMPONE_MINUTES = 10;
+    private static final int POSTPONE_MINUTES = 10;
 
     @Inject
     RestService restService;
@@ -53,12 +55,11 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     @Inject
     Context context;
 
-    private DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    private DateTimeFormatter ISO = ISODateTimeFormat.dateTime();
     private Timer timer;
     private DayAction dayAction;
     private DateTime startTime;
     private DateTime endTime;
-    private boolean stopped = false;
     private PreferenceMaster preferenceMaster;
     private PeriodFormatter timeFormatter = new PeriodFormatterBuilder()
             .printZeroAlways()
@@ -81,7 +82,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
             dayAction.setFinishDateTime(preferenceMaster.getValue(FINISH_TIME));
             dayAction.setActive(true);
             dayAction.invalidateTime();
-            startTime = fmt.parseDateTime(preferenceMaster.getValue(PASSED_TIME));
+            startTime = ISO.parseDateTime(preferenceMaster.getValue(START_ACTION, preferenceMaster.getValue(START_TIME)));
             endTime = dayAction.getEnd();
         }
     }
@@ -92,10 +93,14 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                 initTime(dayAction);
             }
         } else {
-            if (!this.dayAction.equals(dayAction) && dayAction != null) {
-                initTime(dayAction);
-            } else if (!stopped) {
-                getViewState().updateTime(timeFormatter.print(new Duration(startTime, DateTime.now()).toPeriod()));
+            if(dayAction != null) {
+                this.dayAction.invalidateTime();
+                dayAction.invalidateTime();
+                if (!this.dayAction.equals(dayAction)) {
+                    initTime(dayAction);
+                } else if (dayAction.isRunning()) {
+                    getViewState().updateTime(timeFormatter.print(new Duration(startTime, DateTime.now()).toPeriod()));
+                }
             }
         }
         invalidateActions();
@@ -103,7 +108,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     }
 
     private void initTime(DayAction dayAction) {
-        stopped = false;
         this.dayAction = dayAction;
         dayAction.invalidateTime();
         if(dayAction.isValid()) {
@@ -134,6 +138,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     .putValue(START_TIME, dayAction.getStartDateTime())
                     .putValue(FINISH_TIME, dayAction.getFinishDateTime())
                     .putValue(WEEK_DAY, dayAction.getDayOfWeek().name())
+                    .putValue(START_ACTION, ISO.print(startTime))
                     .commit();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -141,7 +146,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     DateTime now = DateTime.now();
                     if (now.isAfter(startTime)) {
                         if (now.isBefore(endTime)) {
-                            preferenceMaster.putValue(PASSED_TIME, fmt.print(startTime)).applay();
                             getViewState().updateTime(timeFormatter.print(new Duration(startTime, now).toPeriod()));
                         } else {
                             onFinish();
@@ -163,7 +167,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.STARTED) {
                         if (dayAction != null && dayAction.isActive() && timer == null) {
                             startTime = DateTime.now();
-                            stopped = false;
                             continueAction();
                             getViewState().onStarted();
                             databaseService.startDayAction(dayAction);
@@ -174,6 +177,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     }
                 },
                 error -> {
+                    Cat.e(error);
                     getViewState().onActionFailure();
                 }
         ));
@@ -208,7 +212,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                         databaseService.postponeDayAction(dayAction);
                         getViewState().onPostpone();
                         postUpdateActionEvent(response);
-                        DayActionJob.startSchedule(dayAction, TimeUnit.MINUTES.toMillis(POSTMPONE_MINUTES));
+                        DayActionJob.startSchedule(dayAction, TimeUnit.MINUTES.toMillis(POSTPONE_MINUTES));
                     } else {
                         getViewState().onActionFailure();
                     }
@@ -250,7 +254,6 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
 
     private void stopTimer() {
         preferenceMaster.putValue(LAST_TIME_ID, "").applay();
-        stopped = true;
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -299,7 +302,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                                 }
 
                                 if (dayAction.isPostponed() || dayAction.isStarted() || dayAction.isStopped() ||
-                                        (POSTMPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
+                                        (POSTPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
                                     getViewState().switchStateButton(R.id.day_action_postpone, false);
                                 }
                                 if (dayAction.isStarted() && !dayAction.isFinished() && !dayAction.getStopped()) {
@@ -309,7 +312,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                             },
                             error -> {
                                 getViewState().onActionFailure();
-                                if (!stopped) {
+                                if (dayAction.isRunning()) {
                                     continueAction();
                                 }
                             });

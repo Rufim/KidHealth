@@ -26,6 +26,8 @@ import ru.constant.kidhealth.dagger.DaggerAppComponent;
 import ru.constant.kidhealth.dagger.DatabaseModule;
 import ru.constant.kidhealth.job.AppJobCreator;
 
+import static ru.kazantsev.template.domain.Constants.App.USE_MOXY;
+
 
 /**
  * Created by Rufim on 03.07.2015.
@@ -51,6 +53,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         singleton = this;
+        USE_MOXY = true;
 //      CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
 //              .setDefaultFontPath(Constants.Assets.ROBOTO_FONT_PATH)
 //              .setFontAttrId(R.attr.fontPath)

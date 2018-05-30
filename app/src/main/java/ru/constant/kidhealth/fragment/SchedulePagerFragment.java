@@ -24,6 +24,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +68,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(UpdateAction updateAction) {
         DayAction action = updateAction.message;
+        if (action.getPrevDayAction() != null && updateAction.getDirection() != UpdateAction.NEXT) {
+           onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.PREVIOUS));
+        }
+        if (action.getNextDayAction() != null && updateAction.getDirection() != UpdateAction.PREVIOUS) {
+           onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.NEXT));
+        }
         if(action != null) {
             List<DayAction> dayActions = getAdapter().getItemTag(action.getDayOfWeek().ordinal());
             if(dayActions != null) {
@@ -89,6 +96,11 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
                 }
             }
         }
+    }
+
+    public void setPage(WeekDay weekDay) {
+        if(adapter.getItems().size() > 0)
+        pager.setCurrentItem(weekDay.ordinal());
     }
 
     @Override
@@ -178,6 +190,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     public void updateDayActions(WeekDay weekDay, List<DayAction> items) {
+        if(getAdapter().getItems().size() < WeekDay.values().length) {
+            getAdapter().getItems().clear();
+            for (WeekDay day : WeekDay.values()) {
+                getAdapter().getItems().add(new ArrayList<>());
+            }
+        }
         getAdapter().getItems().set(weekDay.ordinal(), items);
     }
 
