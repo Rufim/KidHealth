@@ -68,26 +68,26 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(UpdateAction updateAction) {
         DayAction action = updateAction.message;
-        if (action.getPrevDayAction() != null && updateAction.getDirection() != UpdateAction.NEXT) {
-           onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.PREVIOUS));
-        }
-        if (action.getNextDayAction() != null && updateAction.getDirection() != UpdateAction.PREVIOUS) {
-           onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.NEXT));
-        }
-        if(action != null) {
+        if (action != null) {
+            if (action.getPrevDayAction() != null && updateAction.getDirection() != UpdateAction.NEXT) {
+                onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.PREVIOUS));
+            }
+            if (action.getNextDayAction() != null && updateAction.getDirection() != UpdateAction.PREVIOUS) {
+                onEvent(new UpdateAction(action.getNextDayAction(), UpdateAction.NEXT));
+            }
             List<DayAction> dayActions = getAdapter().getItemTag(action.getDayOfWeek().ordinal());
-            if(dayActions != null) {
+            if (dayActions != null) {
                 for (int i = 0; i < dayActions.size(); i++) {
-                    if(dayActions.get(i).getId().equals(action.getId())) {
+                    if (dayActions.get(i).getId().equals(action.getId())) {
                         dayActions.set(i, action);
                         DayActionsFragment dayActionsFragment = getAdapter().getRegisteredFragment(action.getDayOfWeek().ordinal());
-                        if(dayActionsFragment != null && dayActionsFragment.getAdapter() != null && dayActionsFragment.getAdapter().getItems() != null) {
+                        if (dayActionsFragment != null && dayActionsFragment.getAdapter() != null && dayActionsFragment.getAdapter().getItems() != null) {
                             List<DayAction> dayActionsSrc = dayActionsFragment.getAdapter().getItems();
                             for (int j = 0; j < dayActionsSrc.size(); j++) {
                                 if (dayActionsSrc.get(j).getId().equals(action.getId())) {
-                                        dayActionsSrc.set(j, action);
-                                        dayActionsFragment.getAdapter().notifyDataSetChanged();
-                                        break;
+                                    dayActionsSrc.set(j, action);
+                                    dayActionsFragment.getAdapter().notifyDataSetChanged();
+                                    break;
                                 }
                             }
                         }
@@ -99,8 +99,8 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     public void setPage(WeekDay weekDay) {
-        if(adapter.getItems().size() > 0)
-        pager.setCurrentItem(weekDay.ordinal());
+        if (adapter.getItems().size() > 0)
+            pager.setCurrentItem(weekDay.ordinal());
     }
 
     @Override
@@ -190,7 +190,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     public void updateDayActions(WeekDay weekDay, List<DayAction> items) {
-        if(getAdapter().getItems().size() < WeekDay.values().length) {
+        if (getAdapter().getItems().size() < WeekDay.values().length) {
             getAdapter().getItems().clear();
             for (WeekDay day : WeekDay.values()) {
                 getAdapter().getItems().add(new ArrayList<>());
@@ -215,12 +215,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
 
         @Override
         public int getCount() {
-            return items.size() == 0 ? 0 : WeekDay.values().length  ;
+            return items.size() == 0 ? 0 : WeekDay.values().length;
         }
 
         @Override
         public DayActionsFragment getNewItem(int position) {
-            DayActionsFragment fragment =  new DayActionsFragment();
+            DayActionsFragment fragment = new DayActionsFragment();
             Bundle bundle = new Bundle();
             bundle.putString(DayActionsFragment.WEEK_DAY, WeekDay.values()[position].name());
             fragment.setArguments(bundle);
@@ -242,7 +242,7 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
 
 
     @Override
-    public DataSourcePresenter<DataSourceView<List<DayAction>>,List<DayAction>> getPresenter() {
+    public DataSourcePresenter<DataSourceView<List<DayAction>>, List<DayAction>> getPresenter() {
         return schedulePresenter;
     }
 

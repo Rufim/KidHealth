@@ -2,7 +2,9 @@ package ru.constant.kidhealth.domain.models;
 
 import android.content.Context;
 
+import org.joda.time.LocalDate;
 import java.io.Serializable;
+
 
 import lombok.Data;
 import ru.constant.kidhealth.utils.AppUtils;
@@ -16,18 +18,24 @@ public class User implements Serializable {
 
     private static long point = System.currentTimeMillis();
 
-    String id = "";
-    String name = "";
-    String birthday = "";
-    String phone = "";
-    String login = "";
-    String gender = "";
-    Integer height;
-    Integer weight;
-    String password = "";
-    String photo_path = "";
+    private String id;
+    private String name;
+    private String surname;
+    private String middleName;
+    private LocalDate dateOfBirth;
+    private Sex sex;
+    private String phone;
+    private boolean enabled;
+
+    private String login;
+    private String password;
 
     public static User getInstance(Context context) {
         return  AppUtils.getLastUser();
+    }
+
+    public enum Sex {
+        MALE,
+        FEMALE
     }
 }

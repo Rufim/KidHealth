@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import ru.constant.kidhealth.App;
+import ru.constant.kidhealth.Constants;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.domain.event.UpdateAction;
 import ru.constant.kidhealth.domain.models.ActionStatus;
@@ -45,8 +46,8 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     private static final String FINISH_TIME = "finish_time";
     private static final String START_TIME = "startTime";
     private static final String START_ACTION = "startAction";
+    private static final String END_ACTION = "endAction";
     private static final String LAST_TIME_ID = "id";
-    private static final int POSTPONE_MINUTES = 10;
 
     @Inject
     RestService restService;
@@ -83,7 +84,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
             dayAction.setActive(true);
             dayAction.invalidateTime();
             startTime = ISO.parseDateTime(preferenceMaster.getValue(START_ACTION, preferenceMaster.getValue(START_TIME)));
-            endTime = dayAction.getEnd();
+            endTime = ISO.parseDateTime(preferenceMaster.getValue(END_ACTION, preferenceMaster.getValue(FINISH_TIME)));
         }
     }
 
@@ -111,8 +112,8 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
         this.dayAction = dayAction;
         dayAction.invalidateTime();
         if(dayAction.isValid()) {
-            startTime = dayAction.getStart();
-            endTime = dayAction.getEnd();
+            startTime = dayAction.getFirstAction().getStart();
+            endTime = dayAction.getLastAction().getEnd();
         }
         onReset();
     }
@@ -139,6 +140,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     .putValue(FINISH_TIME, dayAction.getFinishDateTime())
                     .putValue(WEEK_DAY, dayAction.getDayOfWeek().name())
                     .putValue(START_ACTION, ISO.print(startTime))
+                    .putValue(END_ACTION, ISO.print(endTime))
                     .commit();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -212,7 +214,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                         databaseService.postponeDayAction(dayAction);
                         getViewState().onPostpone();
                         postUpdateActionEvent(response);
-                        DayActionJob.startSchedule(dayAction, TimeUnit.MINUTES.toMillis(POSTPONE_MINUTES));
+                        DayActionJob.startSchedule(dayAction, TimeUnit.MINUTES.toMillis(Constants.App.POSTPONE_MINUTES));
                     } else {
                         getViewState().onActionFailure();
                     }
@@ -275,9 +277,9 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                                         startTime = started.getDateTime();
                                     }
                                 } else {
-                                    startTime = dayAction.getStart();
+                                    startTime = dayAction.getFirstAction().getStart();
                                 }
-                                endTime = dayAction.getEnd();
+                                endTime = dayAction.getLastAction().getEnd();
                                 if (!dayAction.isActive()) {
                                     inactiveAction();
                                     return;
@@ -302,7 +304,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                                 }
 
                                 if (dayAction.isPostponed() || dayAction.isStarted() || dayAction.isStopped() ||
-                                        (POSTPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
+                                        (Constants.App.POSTPONE_MINUTES >= new Duration(startTime, endTime).getStandardMinutes())) {
                                     getViewState().switchStateButton(R.id.day_action_postpone, false);
                                 }
                                 if (dayAction.isStarted() && !dayAction.isFinished() && !dayAction.getStopped()) {

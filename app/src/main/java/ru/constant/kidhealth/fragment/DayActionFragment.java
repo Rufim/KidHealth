@@ -85,7 +85,7 @@ public class DayActionFragment extends BaseFragment implements DayActionView {
         if (dayAction != null) {
             GuiUtils.setText(rootView, R.id.day_action_time, AppUtils.fixTime(dayAction.getStartTime()) + " - " + AppUtils.fixTime(dayAction.getFinishTime()));
             GuiUtils.setText(rootView, R.id.day_action_title, dayAction.getTitle());
-            GuiUtils.setText(rootView, R.id.day_action_comment, dayAction.getComment());
+            GuiUtils.setText(rootView, R.id.day_action_comment, dayAction.getDescription());
             if (dayAction.isActive()) {
                 dayActionActive.setBackgroundResource(R.drawable.green_light);
             } else {

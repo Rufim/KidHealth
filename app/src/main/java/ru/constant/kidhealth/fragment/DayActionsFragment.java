@@ -220,7 +220,7 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
             }
             GuiUtils.setText(holder, R.id.schedule_day_action_time, time);
             GuiUtils.setText(holder, R.id.schedule_day_action_title, item.getTitle());
-            GuiUtils.setText(holder, R.id.schedule_day_action_comment, item.getComment());
+            GuiUtils.setText(holder, R.id.schedule_day_action_comment, item.getDescription());
             if (item.isRunning()) {
                 GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_run);
             } else {

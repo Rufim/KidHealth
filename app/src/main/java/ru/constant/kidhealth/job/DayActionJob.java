@@ -13,8 +13,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.evernote.android.job.Job;
-import com.evernote.android.job.JobManager;
-import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,16 +21,15 @@ import org.joda.time.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
 import ru.constant.kidhealth.App;
+import ru.constant.kidhealth.Constants;
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
 import ru.constant.kidhealth.domain.event.UpdateAction;
 import ru.constant.kidhealth.domain.models.DayAction;
-import ru.constant.kidhealth.fragment.SchedulePagerFragment;
 import ru.constant.kidhealth.service.DatabaseService;
 import ru.kazantsev.template.util.TextUtils;
 
@@ -123,7 +120,11 @@ public class DayActionJob extends Job {
 
     public static void startSchedule(DayAction dayAction) {
         if (dayAction != null) {
-            startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart()).getMillis());
+            if(dayAction.isPostponed()) {
+                startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart().plusMinutes(Constants.App.POSTPONE_MINUTES)).getMillis());
+            } else {
+                startSchedule(dayAction, new Duration(DateTime.now(), dayAction.getStart()).getMillis());
+            }
             //startSchedule(dayAction, 60000);
         } else {
             Log.e(TAG, "action not valid or null ");
