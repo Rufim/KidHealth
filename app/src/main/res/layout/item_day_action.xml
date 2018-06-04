@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:and="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:paddingTop="@dimen/spacing_large"
@@ -63,14 +64,13 @@
         android:layout_marginLeft="@dimen/spacing_xlarge"
         android:textColor="@color/gray"
         android:layout_height="wrap_content" />
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
         android:id="@+id/schedule_day_action_run"
         android:src="@drawable/running_rabbit"
-        app:tint="@color/white"
-        app:backgroundTint="@color/accent"
-        app:fabSize="normal"
-        app:elevation="12dp"
+        android:background="@drawable/circle_button"
+        android:elevation="12dp"
         android:padding="3dp"
+        android:tint="@color/white"
         android:clickable="true"
         android:focusable="true"
         android:scaleType="center"

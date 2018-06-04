@@ -35,6 +35,7 @@ import static ru.kazantsev.template.domain.Constants.App.USE_MOXY;
 @ReportsCrashes(
         mailTo = "dmitry.kazantsev@constant.obninsk.ru",
         mode = ReportingInteractionMode.DIALOG,
+        alsoReportToAndroidFramework = true,
         resDialogTheme = R.style.AppTheme_Dialog,
         resDialogTitle = R.string.crash_title_text,
         resDialogText = R.string.crash_text

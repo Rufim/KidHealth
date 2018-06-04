@@ -3,6 +3,8 @@ package ru.constant.kidhealth.domain.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -117,7 +119,9 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         if(nextDayAction ==  null)  {
             return null;
         } else {
-            nextDayAction.load();
+            if(!nextDayAction.isValid()) {
+                nextDayAction.load();
+            }
             return nextDayAction;
         }
     }
@@ -126,9 +130,17 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         if(prevDayAction ==  null)  {
             return null;
         } else {
-            prevDayAction.load();
+            if(!prevDayAction.isValid()) {
+                prevDayAction.load();
+            }
             return prevDayAction;
         }
+    }
+
+    public  SortedSet<LogStatus> getCurrentStatuses() {
+        TreeSet<LogStatus> statuses = new TreeSet<>();
+        if(getActionStatuses() == null || getActionStatuses() .isEmpty() || getStart() == null) return  statuses;
+        return Stream.of(getActionStatuses()).filter(status -> status.getDateTime().toLocalDate().isEqual(getStart().toLocalDate())).collect(Collectors.toCollection(() -> statuses));
     }
 
     public void invalidateTime() {
@@ -138,8 +150,9 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
             start = start.withField(DateTimeFieldType.dayOfWeek(), getDayOfWeek().ordinal() + 1);
             end = end.withDate(LocalDate.now());
             end = end.withField(DateTimeFieldType.dayOfWeek(), getDayOfWeek().ordinal() + 1);
-            if (getActionStatuses() != null && getActionStatuses().size() > 0) {
-                LogStatus status = getActionStatuses().first();
+            SortedSet<LogStatus> statuses = getCurrentStatuses();
+            if (statuses.size() > 0) {
+                LogStatus status = statuses.first();
                 switch (status.getStatus()) {
                     case STARTED:
                         setStarted(true);
@@ -157,7 +170,7 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
                         setFinished(true);
                         break;
                 }
-                setPostponed(Stream.of(getActionStatuses()).anyMatch(stat -> stat.getStatus().equals(ActionStatus.POSTPONED)));
+                setPostponed(Stream.of(statuses).anyMatch(stat -> stat.getStatus().equals(ActionStatus.POSTPONED)));
             }
             if(prevDayAction != null) {
                 notified = true;

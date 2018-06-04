@@ -11,17 +11,13 @@
         android:layout_height="@dimen/schedule_tab">
     <TextView
         android:id="@+id/schedule_tab_day_of_month"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:textColor="@color/white"
         android:layout_marginTop="4dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
         android:gravity="center"
         android:background="@drawable/rounded_accent"
-        android:text="21"/>
+        android:text="12"/>
     <TextView
         android:maxLines="1"
         android:id="@+id/schedule_tab_name_of_day"

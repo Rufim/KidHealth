@@ -190,13 +190,9 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     }
 
     public void updateDayActions(WeekDay weekDay, List<DayAction> items) {
-        if (getAdapter().getItems().size() < WeekDay.values().length) {
-            getAdapter().getItems().clear();
-            for (WeekDay day : WeekDay.values()) {
-                getAdapter().getItems().add(new ArrayList<>());
-            }
+        if (getAdapter().getItems().size() == WeekDay.values().length) {
+            getAdapter().getItems().set(weekDay.ordinal(), items);
         }
-        getAdapter().getItems().set(weekDay.ordinal(), items);
     }
 
     public List<DayAction> getDayActions(WeekDay weekDay) {

@@ -49,6 +49,12 @@ public class MainActivity extends BaseActivity {
     @Inject
     DatabaseService databaseService;
 
+    public MainActivity () {
+        disableNavigationBar = true;
+        toolbarClassic = true;
+        useCalligraphy = false;
+    }
+
     private static MainActivity instance;
 
     public static MainActivity getInstance() {
@@ -57,8 +63,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        disableNavigationBar = true;
-        toolbarClassic = true;
         super.onCreate(savedInstanceState);
         App.getAppComponent().inject(this);
         setTitle("");

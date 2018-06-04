@@ -166,7 +166,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     public void startAction() {
         dispouseOnDestroy(restService.startAction(dayAction.getId()).subscribe(
                 response -> {
-                    if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.STARTED) {
+                    if (response != null && response.getCurrentStatuses().size() > 0 && response.getCurrentStatuses().first().getStatus() == ActionStatus.STARTED) {
                         if (dayAction != null && dayAction.isActive() && timer == null) {
                             startTime = DateTime.now();
                             continueAction();
@@ -188,7 +188,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     public void stopAction() {
         dispouseOnDestroy(restService.stopAction(dayAction.getId()).subscribe(
                 response -> {
-                    if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.STOPPED) {
+                    if (response != null && response.getCurrentStatuses().size() > 0 && response.getCurrentStatuses().first().getStatus() == ActionStatus.STOPPED) {
                         if (timer != null) {
                             getViewState().updateTime(timeFormatter.print(new Duration(startTime, DateTime.now()).toPeriod()));
                         }
@@ -210,7 +210,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     public void postponeAction() {
         dispouseOnDestroy(restService.postponeAction(dayAction.getId()).subscribe(
                 response -> {
-                    if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.POSTPONED) {
+                    if (response != null && response.getCurrentStatuses().size() > 0 && response.getCurrentStatuses().first().getStatus() == ActionStatus.POSTPONED) {
                         databaseService.postponeDayAction(dayAction);
                         getViewState().onPostpone();
                         postUpdateActionEvent(response);
@@ -228,7 +228,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
     public void finishAction() {
         dispouseOnDestroy(restService.finishAction(dayAction.getId()).subscribe(
                 response -> {
-                    if (response != null && response.getActionStatuses().size() > 0 && response.getActionStatuses().first().getStatus() == ActionStatus.FINISHED) {
+                    if (response != null && response.getCurrentStatuses().size() > 0 && response.getCurrentStatuses().first().getStatus() == ActionStatus.FINISHED) {
                         if (startTime.isBefore(endTime))
                             getViewState().updateTime(timeFormatter.print(new Duration(startTime, endTime).toPeriod()));
                         databaseService.finishDayAction(dayAction);
@@ -271,8 +271,10 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     .subscribe(freshAction -> {
                                 dayAction = freshAction;
                                 dayAction.invalidateTime();
-                                if (dayAction.getActionStatuses().size() > 0) {
-                                    LogStatus started = Stream.of(dayAction.getActionStatuses()).filter(stat -> stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
+                                if (dayAction.getCurrentStatuses().size() > 0) {
+                                    LogStatus started = Stream.of(dayAction.getCurrentStatuses())
+                                            .filter(stat -> stat.getDateTime().toLocalDate().isEqual(dayAction.getStart().toLocalDate())
+                                                    && stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
                                     if (started != null) {
                                         startTime = started.getDateTime();
                                     }
