@@ -103,36 +103,47 @@ public class DatabaseService {
 
     public void startDayAction(DayAction dayAction) {
         if(dayAction != null && dayAction.isValid()) {
-            dayAction.setStarted(true);
-            dayAction.setFinished(false);
-            doAction(Action.UPDATE, dayAction);
+            dayAction.forAll(action -> {
+                action.setStarted(true);
+                action.setStopped(false);
+                action.setFinished(false);
+                doAction(Action.UPDATE, action);
+            });
         }
     }
 
     public void stopDayAction(DayAction dayAction) {
         if(dayAction != null && dayAction.isValid()) {
-            dayAction.setStopped(true);
-            dayAction.setStarted(false);
-            dayAction.setFinished(false);
-            doAction(Action.UPDATE, dayAction);
+            dayAction.forAll(action -> {
+                action.setStopped(true);
+                action.setStarted(false);
+                action.setFinished(false);
+                doAction(Action.UPDATE, action);
+            });
         }
     }
 
     public void finishDayAction(DayAction dayAction) {
         if(dayAction != null && dayAction.isValid()) {
-            dayAction.setStarted(true);
-            dayAction.setFinished(true);
-            doAction(Action.UPDATE, dayAction);
+            dayAction.forAll(action -> {
+                action.setStarted(true);
+                action.setStopped(false);
+                action.setFinished(true);
+                doAction(Action.UPDATE, action);
+            });
         }
     }
 
 
     public void postponeDayAction(DayAction dayAction) {
         if(dayAction != null && dayAction.isValid()) {
-            dayAction.setPostponed(true);
-            dayAction.setStarted(false);
-            dayAction.setFinished(false);
-            doAction(Action.UPDATE, dayAction);
+            dayAction.forAll(action -> {
+                action.setPostponed(true);
+                action.setStarted(false);
+                action.setStopped(false);
+                action.setFinished(false);
+                doAction(Action.UPDATE, action);
+            });
         }
     }
 

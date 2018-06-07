@@ -5,15 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.annimon.stream.Stream;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import net.vrallev.android.cat.Cat;
@@ -24,7 +19,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -33,14 +27,11 @@ import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.domain.event.UpdateAction;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.WeekDay;
-import ru.constant.kidhealth.job.DayActionJob;
 import ru.constant.kidhealth.mvp.presenters.SchedulePresenter;
-import ru.constant.kidhealth.utils.AppUtils;
 import ru.kazantsev.template.adapter.FragmentPagerAdapter;
 import ru.kazantsev.template.fragments.mvp.MvpPagerFragment;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceView;
-import ru.kazantsev.template.util.AndroidSystemUtils;
 import ru.kazantsev.template.util.GuiUtils;
 
 public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, DayActionsFragment> implements DataSourceView<List<DayAction>> {
@@ -69,11 +60,12 @@ public class SchedulePagerFragment extends MvpPagerFragment<List<DayAction>, Day
     public void onEvent(UpdateAction updateAction) {
         DayAction action = updateAction.message;
         if (action != null) {
-            if (action.getPrevDayAction() != null && updateAction.getDirection() != UpdateAction.NEXT) {
-                onEvent(new UpdateAction(action.getPrevDayAction(), UpdateAction.PREVIOUS));
+            action.load();
+            if (action.prevDayAction() != null && updateAction.getDirection() != UpdateAction.NEXT) {
+                onEvent(new UpdateAction(action.prevDayAction(), UpdateAction.PREVIOUS));
             }
-            if (action.getNextDayAction() != null && updateAction.getDirection() != UpdateAction.PREVIOUS) {
-                onEvent(new UpdateAction(action.getNextDayAction(), UpdateAction.NEXT));
+            if (action.nextDayAction() != null && updateAction.getDirection() != UpdateAction.PREVIOUS) {
+                onEvent(new UpdateAction(action.nextDayAction(), UpdateAction.NEXT));
             }
             List<DayAction> dayActions = getAdapter().getItemTag(action.getDayOfWeek().ordinal());
             if (dayActions != null) {

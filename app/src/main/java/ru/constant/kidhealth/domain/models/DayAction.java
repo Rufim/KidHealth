@@ -6,9 +6,7 @@ import android.os.Parcelable;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ColumnIgnore;
 import com.raizlabs.android.dbflow.annotation.ConflictAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -18,7 +16,6 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -26,7 +23,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -35,6 +31,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import ru.constant.kidhealth.database.MyDatabase;
 import ru.kazantsev.template.domain.Validatable;
+import ru.kazantsev.template.util.Delegate;
 import ru.kazantsev.template.util.TextUtils;
 
 @Data
@@ -115,7 +112,7 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         }
     };
 
-    public DayAction getNextDayAction() {
+    public DayAction nextDayAction() {
         if(nextDayAction ==  null)  {
             return null;
         } else {
@@ -126,7 +123,7 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
         }
     }
 
-    public DayAction getPrevDayAction() {
+    public DayAction prevDayAction() {
         if(prevDayAction ==  null)  {
             return null;
         } else {
@@ -140,7 +137,12 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     public  SortedSet<LogStatus> getCurrentStatuses() {
         TreeSet<LogStatus> statuses = new TreeSet<>();
         if(getActionStatuses() == null || getActionStatuses() .isEmpty() || getStart() == null) return  statuses;
-        return Stream.of(getActionStatuses()).filter(status -> status.getDateTime().toLocalDate().isEqual(getStart().toLocalDate())).collect(Collectors.toCollection(() -> statuses));
+        return Stream.of(getActionStatuses())
+                .filter(status -> {
+                    DateTime statusTime = status.getDateTime();
+                    return statusTime != null && statusTime.isAfter(getFirstAction().getStart()) && statusTime.isBefore(getLastAction().getEnd());
+                })
+                .collect(Collectors.toCollection(() -> statuses));
     }
 
     public void invalidateTime() {
@@ -175,8 +177,12 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
             if(prevDayAction != null) {
                 notified = true;
             }
-            getPrevDayAction();
-            getNextDayAction();
+            if(prevDayAction != null) {
+                prevDayAction.setNextDayAction(this);
+            }
+            if(nextDayAction != null) {
+                nextDayAction.setPrevDayAction(this);
+            }
             invalidated = true;
         } else {
             invalidated = false;
@@ -184,28 +190,28 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     }
 
     public DayAction getLastAction() {
-        DayAction prevAction = getNextDayAction();
+        DayAction prevAction = nextDayAction();
         if(prevAction == null) return this;
         DayAction result = prevAction;
         while (prevAction != null) {
             result = prevAction;
             result.setActionStatuses(getActionStatuses());
             result.invalidateTime();
-            prevAction = prevAction.getNextDayAction();
+            prevAction = prevAction.nextDayAction();
         }
         return result;
     }
 
 
     public DayAction getFirstAction() {
-        DayAction nextAction = getPrevDayAction();
+        DayAction nextAction = prevDayAction();
         if(nextAction == null) return this;
         DayAction result = nextAction;
         while (nextAction != null) {
             result = nextAction;
             result.setActionStatuses(getActionStatuses());
             result.invalidateTime();
-            nextAction = nextAction.getPrevDayAction();
+            nextAction = nextAction.prevDayAction();
         }
         return result;
     }
@@ -243,6 +249,43 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
 
     public Boolean isPostponed() {
         return postponed == null ? false : postponed;
+    }
+
+    public DayAction setNotified(Boolean notified) {
+        this.notified = notified;
+        return this;
+    }
+
+    public DayAction setStarted(Boolean started) {
+        this.started = started;
+        return this;
+    }
+
+    public DayAction setStopped(Boolean stopped) {
+        this.stopped = stopped;
+        return this;
+    }
+
+    public DayAction setFinished(Boolean finished) {
+        this.finished = finished;
+        return this;
+    }
+
+    public DayAction setPostponed(Boolean postponed) {
+        this.postponed = postponed;
+        return this;
+    }
+
+    public void forAll(Delegate<DayAction> delegate) {
+        delegate.call(this);
+        DayAction action = this;
+        while ((action = action.nextDayAction()) != null) {
+            delegate.call(action);
+        }
+        action = this;
+        while ((action = action.prevDayAction()) != null) {
+            delegate.call(action);
+        }
     }
 
     @Override

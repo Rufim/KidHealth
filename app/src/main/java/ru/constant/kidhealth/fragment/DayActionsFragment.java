@@ -1,18 +1,10 @@
 package ru.constant.kidhealth.fragment;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
-import android.text.TextPaint;
-import android.text.style.AlignmentSpan;
-import android.text.style.CharacterStyle;
-import android.text.style.DynamicDrawableSpan;
-import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,12 +150,12 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
 
         @Override
         public boolean onClick(View view, @Nullable DayAction item) {
-            if (view.getId() == R.id.schedule_day_action_time_next && item.getNextDayAction() != null) {
-                ((SchedulePagerFragment)getParentFragment()).setPage(item.getNextDayAction().getDayOfWeek());
+            if (view.getId() == R.id.schedule_day_action_time_next && item.nextDayAction() != null) {
+                ((SchedulePagerFragment)getParentFragment()).setPage(item.nextDayAction().getDayOfWeek());
                 return true;
             }
-            if(view.getId() == R.id.schedule_day_action_time_previous && item.getPrevDayAction() != null) {
-                ((SchedulePagerFragment)getParentFragment()).setPage(item.getPrevDayAction().getDayOfWeek());
+            if(view.getId() == R.id.schedule_day_action_time_previous && item.prevDayAction() != null) {
+                ((SchedulePagerFragment)getParentFragment()).setPage(item.prevDayAction().getDayOfWeek());
                 return false;
             }
             if (view.getId() == R.id.schedule_day_action_run && item.isRunning()) {
@@ -199,22 +191,22 @@ public class DayActionsFragment extends MvpListFragment<DayAction> implements Da
             GuiUtils.setVisibility(View.GONE, root, R.id.schedule_day_action_time_next);
             GuiUtils.setVisibility(View.GONE, root, R.id.schedule_day_action_time_previous);
             SpannableStringBuilder time = new SpannableStringBuilder();
-            if(item.getPrevDayAction()  == null) {
+            if(item.prevDayAction()  == null) {
                 time.append(fixTime(item.getStartTime()));
             } else {
                // GuiUtils.appendSpannableText(time, "(", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
-                time.append(fixTime(item.getPrevDayAction().getStartTime()));
+                time.append(fixTime(item.prevDayAction().getStartTime()));
                 GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_time_previous);
                 GuiUtils.appendSpannableText(time," " + getString(R.string.yesterday), new RelativeSizeSpan(0.3f), new VerticalAlignmentSpan(1.5));
               //  GuiUtils.appendSpannableText(time, ")", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
             }
             time.append(" - ");
-            if(item.getNextDayAction()  == null) {
+            if(item.nextDayAction()  == null) {
                 time.append(fixTime(item.getFinishTime()));
             } else {
               //  GuiUtils.appendSpannableText(time, "(", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
                 GuiUtils.appendSpannableText(time, getString(R.string.tomorrow) + " ", new RelativeSizeSpan(0.3f), new VerticalAlignmentSpan(1.5));
-                time.append(fixTime(item.getNextDayAction().getFinishTime()));
+                time.append(fixTime(item.nextDayAction().getFinishTime()));
                 GuiUtils.setVisibility(View.VISIBLE, root, R.id.schedule_day_action_time_next);
               //  GuiUtils.appendSpannableText(time, ")", new RelativeSizeSpan(0.75f),  new VerticalAlignmentSpan(0.1));
             }

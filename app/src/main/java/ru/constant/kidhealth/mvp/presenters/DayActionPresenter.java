@@ -16,6 +16,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import java.util.SortedSet;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -172,7 +173,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                             continueAction();
                             getViewState().onStarted();
                             databaseService.startDayAction(dayAction);
-                            postUpdateActionEvent(response);
+                            postUpdateActionEvent(dayAction);
                         } else {
                             getViewState().onActionFailure();
                         }
@@ -194,7 +195,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                         }
                         onReset();
                         databaseService.stopDayAction(dayAction);
-                        postUpdateActionEvent(response);
+                        postUpdateActionEvent(dayAction);
                         getViewState().onCanceled();
                     } else {
                         getViewState().onActionFailure();
@@ -213,7 +214,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     if (response != null && response.getCurrentStatuses().size() > 0 && response.getCurrentStatuses().first().getStatus() == ActionStatus.POSTPONED) {
                         databaseService.postponeDayAction(dayAction);
                         getViewState().onPostpone();
-                        postUpdateActionEvent(response);
+                        postUpdateActionEvent(dayAction);
                         DayActionJob.startSchedule(dayAction, TimeUnit.MINUTES.toMillis(Constants.App.POSTPONE_MINUTES));
                     } else {
                         getViewState().onActionFailure();
@@ -232,7 +233,7 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                         if (startTime.isBefore(endTime))
                             getViewState().updateTime(timeFormatter.print(new Duration(startTime, endTime).toPeriod()));
                         databaseService.finishDayAction(dayAction);
-                        postUpdateActionEvent(response);
+                        postUpdateActionEvent(dayAction);
                         getViewState().onFinished();
                     } else {
                         getViewState().onActionFailure();
@@ -271,10 +272,10 @@ public class DayActionPresenter extends BasePresenter<DayActionView> {
                     .subscribe(freshAction -> {
                                 dayAction = freshAction;
                                 dayAction.invalidateTime();
-                                if (dayAction.getCurrentStatuses().size() > 0) {
-                                    LogStatus started = Stream.of(dayAction.getCurrentStatuses())
-                                            .filter(stat -> stat.getDateTime().toLocalDate().isEqual(dayAction.getStart().toLocalDate())
-                                                    && stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
+                                SortedSet<LogStatus> statuses = dayAction.getCurrentStatuses();
+                                if (statuses.size() > 0) {
+                                    LogStatus started = Stream.of(statuses)
+                                            .filter(stat -> stat.getStatus().equals(ActionStatus.STARTED)).findFirst().orElse(null);
                                     if (started != null) {
                                         startTime = started.getDateTime();
                                     }

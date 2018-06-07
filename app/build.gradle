@@ -30,8 +30,8 @@ android {
         applicationId "ru.constant.kidhealth"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 8
-        versionName "0.0.8"
+        versionCode 9
+        versionName "0.0.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
