@@ -11,7 +11,7 @@ import ru.constant.kidhealth.service.RestService;
 public class RestServiceModule {
     @Provides
     @Singleton
-    public RestService provideGithubService(RestApi authApi) {
+    public RestService provideRestService(RestApi authApi) {
         return new RestService(authApi);
     }
 }

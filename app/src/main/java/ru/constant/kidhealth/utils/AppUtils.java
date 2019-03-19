@@ -1,15 +1,28 @@
 package ru.constant.kidhealth.utils;
 
+import android.net.Uri;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+
+import java.io.IOException;
+
+import java.net.URI;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.domain.models.Token;
 import ru.constant.kidhealth.domain.models.User;
-import ru.constant.kidhealth.job.ParentReminderJob;
+import ru.constant.kidhealth.service.RestService;
 import ru.kazantsev.template.util.PreferenceMaster;
 
 public class AppUtils {
 
-    private static final String ACCESS_TOKEN = "accessToken";
-    private static final String REFRESH_TOKEN = "refreshToken";
+    public static final String ACCESS_TOKEN = "accessToken";
+    public static final String REFRESH_TOKEN = "refreshToken";
     private static final String ACCESS_EXPIRES = "accessExpires";
     private static final String REFRESH_EXPIRES = "refreshExpires";
     private static final String IS_LOGGED = "is_logged";

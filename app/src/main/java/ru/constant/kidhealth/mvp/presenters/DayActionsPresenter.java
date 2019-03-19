@@ -1,29 +1,26 @@
 package ru.constant.kidhealth.mvp.presenters;
 
-import android.app.job.JobScheduler;
-
 import com.arellomobile.mvp.InjectViewState;
 
 import net.vrallev.android.cat.Cat;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.WeekDay;
 import ru.constant.kidhealth.job.DayActionJob;
-import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.service.DatabaseService;
+import ru.constant.kidhealth.service.RestService;
 import ru.kazantsev.template.lister.ObservableDataSource;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
-import ru.kazantsev.template.mvp.view.DataSourceView;
 import ru.kazantsev.template.mvp.view.DataSourceViewNoPersist;
-import ru.kazantsev.template.net.HTTPExecutor;
 
 @InjectViewState
 public class DayActionsPresenter extends DataSourcePresenter<DataSourceViewNoPersist<DayAction>, DayAction> {
@@ -40,10 +37,11 @@ public class DayActionsPresenter extends DataSourcePresenter<DataSourceViewNoPer
     public DayActionsPresenter() {
         App.getAppComponent().inject(this);
         setDataSource(new ObservableDataSource<DayAction>() {
+
             @Override
-            public Observable<DayAction> getObservableItems(int skip, int size) throws Exception {
+            public Maybe<List<DayAction>> getObservableItems(int skip, int size) throws Exception {
                 if(skip > 0 || weekDay == null)  {
-                    return Observable.empty();
+                    return Maybe.empty();
                 } else {
                     return RestService.transformActions(restService.getWeekDay(weekDay.name()).map(result ->{
                         try {

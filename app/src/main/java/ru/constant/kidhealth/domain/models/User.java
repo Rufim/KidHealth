@@ -3,8 +3,8 @@ package ru.constant.kidhealth.domain.models;
 import android.content.Context;
 
 import org.joda.time.LocalDate;
-import java.io.Serializable;
 
+import java.io.Serializable;
 
 import lombok.Data;
 import ru.constant.kidhealth.utils.AppUtils;

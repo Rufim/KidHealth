@@ -22,7 +22,7 @@ public class TestComponent implements AppComponent {
 
     @Override
     public RestService getRestService() {
-        return restServiceModule.provideGithubService(restApiModule.provideAuthApi(
+        return restServiceModule.provideRestService(restApiModule.provideAuthApi(
                 retrofitModule.provideRetrofit(
                         retrofitModule.provideRetrofitBuilder(
                                 retrofitModule.provideConverterFactory(

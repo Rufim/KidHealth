@@ -1,8 +1,6 @@
 package ru.constant.kidhealth.mvp.presenters;
 
 
-import android.os.AsyncTask;
-
 import com.arellomobile.mvp.InjectViewState;
 
 import net.vrallev.android.cat.Cat;
@@ -10,24 +8,21 @@ import net.vrallev.android.cat.Cat;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.WeekDay;
 import ru.constant.kidhealth.job.DayActionJob;
-import ru.constant.kidhealth.service.RestService;
 import ru.constant.kidhealth.service.DatabaseService;
 import ru.constant.kidhealth.service.RestService;
 import ru.kazantsev.template.lister.ObservableDataSource;
 import ru.kazantsev.template.mvp.presenter.DataSourcePresenter;
 import ru.kazantsev.template.mvp.view.DataSourceView;
-import ru.kazantsev.template.net.HTTPExecutor;
 
 @InjectViewState
 public class SchedulePresenter extends DataSourcePresenter<DataSourceView<List<DayAction>>, List<DayAction>> {
@@ -42,10 +37,10 @@ public class SchedulePresenter extends DataSourcePresenter<DataSourceView<List<D
         App.getAppComponent().inject(this);
         setDataSource(new ObservableDataSource<List<DayAction>>() {
             @Override
-            public Observable<List<DayAction>> getObservableItems(int day, int size) {
+            public Maybe<List<List<DayAction>>> getObservableItems(int day, int size) {
                 if (day > 0) {
                     getViewState().stopLoading();
-                    return Observable.empty();
+                    return Maybe.empty();
                 }
                 return restService.getWeek().map(map -> {
                     databaseService.insertOrUpdateScheduleForWeek(map);
@@ -59,7 +54,7 @@ public class SchedulePresenter extends DataSourcePresenter<DataSourceView<List<D
                         weekActions.add(weekDay.ordinal(), actions);
                     }
                     return weekActions;
-                }).flatMapIterable(item -> item);
+                }).firstElement();
             }
         });
     }

@@ -17,13 +17,9 @@ import com.evernote.android.job.Job;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.Map;
-
 import ru.constant.kidhealth.R;
 import ru.constant.kidhealth.activity.MainActivity;
-import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.utils.AppUtils;
-import ru.kazantsev.template.util.TextUtils;
 
 ;
 

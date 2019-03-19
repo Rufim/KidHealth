@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -31,7 +31,7 @@ import ru.constant.kidhealth.domain.models.WeekDay;
 public interface RestApi {
 
     enum ActionCommand {
-        START,STOP,POSTPONE,FINISH;
+        START,STOP,POSTPONE,FINISH
     }
 
 	@POST("/auth/signIn")
@@ -49,8 +49,9 @@ public interface RestApi {
     @GET("api/schedule/{weekDay}")
     Observable<List<DayAction>> weekDay(@Path("weekDay") String weekDay);
 
+    @FormUrlEncoded
     @POST("api/schedule/action/{actionId}")
-    Observable<DayAction> actionCommand(@Path("actionId") String id, @Query("command") ActionCommand command, @Query("dateTime") DateTime dateTime);
+    Observable<DayAction> actionCommand(@Path("actionId") String id, @Field("command") ActionCommand command, @Field("dateTime") DateTime dateTime);
 
     @GET("api/schedule/action/{actionId}")
     Observable<DayAction> getAction(@Path("actionId") String id);

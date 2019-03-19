@@ -4,26 +4,24 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.method.LinkMovementMethod;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.net.URLEncoder;
+
 import javax.inject.Inject;
 
 import ru.constant.kidhealth.App;
 import ru.constant.kidhealth.R;
-import ru.constant.kidhealth.dagger.RetrofitModule;
 import ru.constant.kidhealth.domain.models.DayAction;
 import ru.constant.kidhealth.domain.models.Token;
 import ru.constant.kidhealth.fragment.DayActionFragment;
@@ -39,8 +37,6 @@ import ru.kazantsev.template.domain.event.FragmentAttachedEvent;
 import ru.kazantsev.template.fragments.BaseFragment;
 import ru.kazantsev.template.util.FragmentBuilder;
 import ru.kazantsev.template.util.GuiUtils;
-
-import static android.R.attr.textColor;
 
 
 public class MainActivity extends BaseActivity {
@@ -98,7 +94,13 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(SignInFragment.class);
                 return true;
             case R.id.common_web:
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(RestService.BASE_URL));
+                String uri = RestService.BASE_URL.replace("8080", "8081");
+                Token token = AppUtils.getToken();
+                if(token != null && token.getAccessToken() != null) {
+                    uri += "/#/main";
+                    uri += "?" + AppUtils.ACCESS_TOKEN + "=" + URLEncoder.encode(token.getAccessToken());
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
                 startActivity(intent);
                 return true;

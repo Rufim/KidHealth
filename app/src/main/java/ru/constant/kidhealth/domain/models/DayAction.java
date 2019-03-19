@@ -3,7 +3,6 @@ package ru.constant.kidhealth.domain.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.gson.annotations.SerializedName;

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import okhttp3.Request;
 import ru.constant.kidhealth.domain.models.Credentials;
@@ -18,8 +19,8 @@ import ru.kazantsev.template.util.RxUtils;
 
 public class RestService {
 
-    public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
-    //public static String BASE_URL = "http://192.168.101.148:8080";
+    //public static String BASE_URL = "http://kidhealth.constant.obninsk.ru";
+    public static String BASE_URL = "http://192.168.101.148:8080";
     private RestApi restApi;
 
     public static final String AUTHENTICATION_HEADER_NAME = "Authorization";
@@ -68,8 +69,8 @@ public class RestService {
         return restApi.week();
     }
 
-    public static Observable<DayAction> transformActions(Observable<List<DayAction>> observable) {
-        return observable.flatMap(Observable::fromIterable);
+    public static Maybe<List<DayAction>> transformActions(Observable<List<DayAction>> observable) {
+        return observable.firstElement();
     }
 
     public Observable<DayAction> testActions(String weekday) {

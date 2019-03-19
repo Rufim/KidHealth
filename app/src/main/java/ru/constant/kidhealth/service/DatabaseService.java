@@ -3,12 +3,10 @@ package ru.constant.kidhealth.service;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.raizlabs.android.dbflow.config.DatabaseDefinition;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.OperatorGroup;
-import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -27,7 +25,6 @@ import java.util.Map;
 
 import ru.constant.kidhealth.Constants;
 import ru.constant.kidhealth.domain.models.DayAction;
-import ru.constant.kidhealth.domain.models.DayActionType;
 import ru.constant.kidhealth.domain.models.DayAction_Table;
 import ru.constant.kidhealth.domain.models.WeekDay;
 import ru.kazantsev.template.util.DBFlowUtils;
