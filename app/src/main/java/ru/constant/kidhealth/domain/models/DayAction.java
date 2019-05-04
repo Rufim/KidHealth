@@ -137,13 +137,10 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     public  SortedSet<LogStatus> getCurrentStatuses() {
         TreeSet<LogStatus> statuses = new TreeSet<>();
         if(getActionStatuses() == null || getActionStatuses() .isEmpty() || getStart() == null) return  statuses;
-        final AtomicBoolean first = new AtomicBoolean(true);
         return Stream.of(getActionStatuses())
                 .filter(status -> {
                     DateTime statusTime = status.getDateTime();
-                    boolean filter = statusTime != null && ((statusTime.isAfter(getFirstAction().getStart()) && statusTime.isBefore(getLastAction().getEnd())) || (ActionStatus.FINISHED.equals(status.getStatus()) && first.get()));
-                    first.set(false);
-                    return filter;
+                    return statusTime != null && ((statusTime.isAfter(getFirstAction().getStart()) && statusTime.isBefore(getLastAction().getEnd())) || (ActionStatus.FINISHED.equals(status.getStatus()) && getLastAction().getEnd().dayOfYear().equals(statusTime.dayOfYear())));
                 })
                 .collect(Collectors.toCollection(() -> statuses));
     }
@@ -158,6 +155,9 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
             SortedSet<LogStatus> statuses = getCurrentStatuses();
             if (statuses.size() > 0) {
                 LogStatus status = statuses.first();
+                if(ActionStatus.STARTED.equals(status.getStatus()) && !getLastAction().getEnd().dayOfYear().equals(DateTime.now().dayOfYear())) {
+                    status.setStatus(ActionStatus.STOPPED);
+                }
                 switch (status.getStatus()) {
                     case STARTED:
                         setStarted(true);
