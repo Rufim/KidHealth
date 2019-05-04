@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -136,10 +137,13 @@ public class DayAction extends BaseModel implements Parcelable, Serializable, Va
     public  SortedSet<LogStatus> getCurrentStatuses() {
         TreeSet<LogStatus> statuses = new TreeSet<>();
         if(getActionStatuses() == null || getActionStatuses() .isEmpty() || getStart() == null) return  statuses;
+        final AtomicBoolean first = new AtomicBoolean(true);
         return Stream.of(getActionStatuses())
                 .filter(status -> {
                     DateTime statusTime = status.getDateTime();
-                    return statusTime != null && statusTime.isAfter(getFirstAction().getStart()) && statusTime.isBefore(getLastAction().getEnd());
+                    boolean filter = statusTime != null && ((statusTime.isAfter(getFirstAction().getStart()) && statusTime.isBefore(getLastAction().getEnd())) || (ActionStatus.FINISHED.equals(status.getStatus()) && first.get()));
+                    first.set(false);
+                    return filter;
                 })
                 .collect(Collectors.toCollection(() -> statuses));
     }
