@@ -104,7 +104,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknifeVersion"
     //   implementation "com.github.User:Repo:Tag"  for git
     // hub repos
-    implementation project(':template')
+    implementation 'com.github.Rufim:AndroidTemplate:0.8.1'
     implementation "com.arello-mobile:moxy:$moxyVersion"
     implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
 
